@@ -13,8 +13,8 @@
 #' @param burn
 #' @param R 
 #' @param thin
-#' @param report.period 
-#' @param x.init 
+#' @param report_period 
+#' @param x_init 
 #' 
 #' @return
 #'
@@ -22,10 +22,27 @@
 #' @name cmm
 NULL
 
+#' @name cmm
+#' @export
+r_cmm = function(n, m, p, nu, burn = 0, thin = 1, x_init = NULL, report_period = NULL)
+{
+	k = length(p)
+	reps = burn + n*thin
+	if (is.null(report_period)) {
+		report_period = reps + 1
+	}
+	if (is.null(x_init)) {
+		x_init = rep(0, k)
+		idx_max = which.max(p)
+		x_init[idx_max] = m
+	}
+	r_cmm_internal(n, m, p, nu, burn, thin, x_init, report_period)
+}
+
 # Expected value of CMM, from the definition of E(X)
 #' @name cmm
 #' @export
-ecmm = function(m, p, nu)
+e_cmm = function(m, p, nu)
 {
 	stopifnot(length(m) == 1)
 	stopifnot(length(nu) == 1)
@@ -47,7 +64,7 @@ ecmm = function(m, p, nu)
 # Variance of CMM, from the definition of Var(X)
 #' @name cmm
 #' @export
-vcmm = function(m, p, nu)
+v_cmm = function(m, p, nu)
 {
 	stopifnot(length(m) == 1)
 	stopifnot(length(nu) == 1)

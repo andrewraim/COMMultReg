@@ -17,7 +17,7 @@
 NULL
 
 #' @export
-cmm_poisreg = function(y, m, X, W, base = 1, par_init = NULL, control = NULL)
+cmm_reg = function(y, m, X, W, base = 1, par_init = NULL, control = NULL)
 {
 	dat_xform = transform_data(y, m, X, W)
 	k = ncol(y)
@@ -32,21 +32,27 @@ cmm_poisreg = function(y, m, X, W, base = 1, par_init = NULL, control = NULL)
 			gamma = numeric(p_w)
 		)
 	} else {
-		check_par(par, dat_xform)
+		check_par(par_init, dat_xform)
 	}
 
 	if (is.null(control)) {
-		control = cmm_poisreg_control()
+		control = cmm_reg_control()
 	}
 
 	out = newton_raphson(par_init = par_init, dat_xform = dat_xform,
 		max_iter = control$max_iter, verbose = control$verbose,
 		base = base, tol = control$tol,
 		xnames = colnames(X), wnames = colnames(W))
-	out$loglik.poisson = out$loglik
+	out$loglik_poisson = out$loglik
 	out$base = base
 	out$loglik = loglik_cmm_xform(out$par, dat_xform, base = base)
 	return(out)
+}
+
+#' @export
+cmm_reg_control = function(tol = 1e-8, verbose = FALSE, max_iter = 200)
+{
+	list(tol = tol, verbose = verbose, max_iter = max_iter)
 }
 
 #' @export
@@ -100,6 +106,7 @@ transform_data = function(y, m, X, W, tol = 1e-8)
 			y_match = t(y[idx_match,])
 		}
 
+		# Partition the observations into their values and frequencies
 		out = gunterize(y_match, all = FALSE)
 		dat_grp[[l]]$z_obs = out$table
 		dat_grp[[l]]$freqs = as.numeric(out$freqs)
@@ -117,6 +124,7 @@ loglik_cmm_xform = function(par, dat_xform, base = 1)
 	ll = 0
 
 	if (TRUE) {
+		# Compute the loglik from the Poisson regression form.
 		# This should be much faster than computing the log-likelihood from scratch,
 		# since the normalizing constants are in the parameters.
 		for (l in 1:L) {
@@ -135,6 +143,7 @@ loglik_cmm_xform = function(par, dat_xform, base = 1)
 			}
 		}
 	} else {
+		# This part should no longer be needed. Remove it?
 		# At least we can use the collapsed form of the data to avoid extra walks
 		# through the multinomial sample space
 		for (l in 1:L) {
@@ -199,7 +208,7 @@ newton_raphson = function(par_init, dat_xform, base = 1, xnames = NULL,
 	}
 
 	elapsed_sec = as.numeric(Sys.time() - st, units = "secs")
-	
+
 	par = vec2par(vartheta, L, p_x, p_w, k)
 	colnames(par$beta) = sprintf("cat%d", (1:k)[-base])
 	if (is.null(xnames)) {
@@ -213,25 +222,25 @@ newton_raphson = function(par_init, dat_xform, base = 1, xnames = NULL,
 	ret = list(par = par, loglik = out$loglik, score = out$score,
 		fim = out$fim, tol = delta, iter = iter, L = L,
 		xnames = xnames, wnames = wnames, elapsed_sec = elapsed_sec)
-	class(ret) = "cmm_poisreg"
+	class(ret) = "cmm_reg"
 	return(ret)
 }
 
 #' @export
-logLik.cmm_poisreg = function(object, ...)
+logLik.cmm_reg = function(object, ...)
 {
 	object$loglik
 }
 
 #' @export
-AIC.cmm_poisreg = function(object, ..., k = 2)
+AIC.cmm_reg = function(object, ..., k = 2)
 {
 	p = length(object$par$gamma) + length(object$par$beta)
 	-2*logLik(object) + k*p
 }
 
 #' @export
-coef.cmm_poisreg = function(object, ...)
+coef.cmm_reg = function(object, ...)
 {
 	vartheta = par2vec(object$par)
 	idx = setdiff(1:length(vartheta), 1:object$L)
@@ -239,7 +248,7 @@ coef.cmm_poisreg = function(object, ...)
 }
 
 #' @export
-vcov.cmm_poisreg = function(object, extended = FALSE, ...)
+vcov.cmm_reg = function(object, extended = FALSE, ...)
 {
 	vartheta = par2vec(object$par)	
 	idx = setdiff(1:length(vartheta), 1:object$L)
@@ -259,7 +268,7 @@ vcov.cmm_poisreg = function(object, extended = FALSE, ...)
 }
 
 #' @export
-fitted.cmm_poisreg = function(object, newX, newW, ...)
+fitted.cmm_reg = function(object, newX, newW, ...)
 {
 	par = object$par
 	k = ncol(par$beta) + 1
@@ -279,7 +288,7 @@ fitted.cmm_poisreg = function(object, newX, newW, ...)
 }
 
 #' @export
-print.cmm_poisreg = function(x, ...)
+print.cmm_reg = function(x, ...)
 {
 	vartheta = par2vec(x$par)
 	idx = setdiff(1:length(vartheta), 1:x$L)
@@ -302,14 +311,14 @@ print.cmm_poisreg = function(x, ...)
 	xnames = x$xnames
 	cats = setdiff(1:k, x$base)
 	if (is.null(xnames)) {
-		label.var = rep(1:p_x, times = k-1)
-		label.dim = rep(cats, each = p_x)
-		snames = sprintf("%d:beta%d", label.dim, label.var)
+		label_var = rep(1:p_x, times = k-1)
+		label_dim = rep(cats, each = p_x)
+		snames = sprintf("%d:beta%d", label_dim, label_var)
 	} else {
 		stopifnot(length(xnames) == nrow(x$par$beta))
-		label.var = rep(xnames, times = k-1)
-		label.dim = rep(cats, each = p_x)
-		snames = sprintf("%d:%s", label.dim, xnames)
+		label_var = rep(xnames, times = k-1)
+		label_dim = rep(cats, each = p_x)
+		snames = sprintf("%d:%s", label_dim, xnames)
 	}
 
 	wnames = x$wnames
@@ -331,12 +340,6 @@ print.cmm_poisreg = function(x, ...)
 	printf("Tolerance: %g\n", x$tol)
 	printf("LogLik: %0.4f   ", logLik(x))
 	printf("AIC: %0.4f\n", AIC(x))
-}
-
-#' @export
-cmm_poisreg_control = function(tol = 1e-8, verbose = FALSE, max_iter = 200)
-{
-	list(tol = tol, verbose = verbose, max_iter = max_iter)
 }
 
 check_par = function(par, dat_xform)

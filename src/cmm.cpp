@@ -6,7 +6,7 @@
  * The CMM conditionals are CMB random variables. We can use this fact to
  * sample from CMM using a Gibbs sampler.
  */
-arma::mat r_cmm(unsigned int n, unsigned int m, const arma::vec& p,
+arma::mat r_cmm_internal(unsigned int n, unsigned int m, const arma::vec& p,
 	double nu, unsigned int burn, unsigned int thin,
 	const arma::vec& x_init, unsigned int report_period)
 {

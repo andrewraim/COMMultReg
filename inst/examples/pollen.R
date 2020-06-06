@@ -15,8 +15,8 @@ X = matrix(1, n, 1)
 W = matrix(1, n, 1)
 
 # ----- Fit CMM distribution -----
-ctrl = cmm_poisreg_control(verbose = TRUE)
-out_cmm = cmm_poisreg(y = y, m = 100, X = X, W = W, base = 1, control = ctrl)
+ctrl = cmm_reg_control(verbose = TRUE)
+out_cmm = cmm_reg(y = y, m = 100, X = X, W = W, base = 1, control = ctrl)
 
 # Print summary
 print(out_cmm)
@@ -34,8 +34,8 @@ V_hat = vcov(out_cmm)
 logLik(out_cmm)
 
 # E(Y) and Var(Y) under the estimated model, for one observation
-ecmm(as.integer(m[1]), p_hat, nu_hat)
-vcmm(as.integer(m[1]), p_hat, nu_hat)
+e_cmm(as.integer(m[1]), p_hat, nu_hat)
+v_cmm(as.integer(m[1]), p_hat, nu_hat)
 
 # Compare to empirical mean and variance
 colMeans(y)

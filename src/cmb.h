@@ -28,4 +28,3 @@ double loglik_cmb(const arma::vec& y, const arma::vec& m,
 	const arma::vec& p, const arma::vec& nu);
 
 #endif
-

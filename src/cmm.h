@@ -4,10 +4,8 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
 
-//' @name cmm
-//' @export
 // [[Rcpp::export]]
-arma::mat r_cmm(unsigned int n, unsigned int m, const arma::vec& p,
+arma::mat r_cmm_internal(unsigned int n, unsigned int m, const arma::vec& p,
 	double nu, unsigned int burn, unsigned int thin,
 	const arma::vec& x_init, unsigned int report_period);
 
