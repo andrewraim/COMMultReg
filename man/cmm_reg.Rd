@@ -45,6 +45,25 @@ cmm_reg_control(tol = 1e-08, verbose = FALSE, max_iter = 200)
 \description{
 Functions for CMM Regression.
 }
+\details{
+Fit the model
+\deqn{
+\bm{Y}_i \sim \textrm{CMM}_k(m_i, \bm{p}_i, \nu_i),
+\quad i = 1, \ldots, n
+}
+assuming multinomial logit link
+\deqn{
+\log\left(\frac{p_{i2}}{p_{i1}} \right) = \bm{x}_i^\top \bm{\beta}_1,
+\; \ldots, \;
+\log\left(\frac{p_{i,k} }{ p_{i1}} \right) = \bm{x}_i^\top \bm{\beta}_{k-1},
+}
+and identity link
+\deqn{
+\nu_i = \bm{w}_i^\top \bm{\gamma}.
+}
+The first category is assumed to be the baseline by default, but this can be
+changed by specifying the \code{base} argument.
+}
 \examples{
 print("TBD")
 

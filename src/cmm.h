@@ -23,8 +23,11 @@ double normconst_cmm(unsigned int m, const arma::vec& p, double nu,
 
 //' Density for CMM random sample
 //' 
-//' Compute individual density contributions for observations in an independent, but not necessarily
-//' identically distributed, CMM random sample.
+//' Compute individual density contributions for 
+//' \deqn{
+//' \bm{X}_i \sim \textrm{CMM}_k(m_i, \bm{p}_i, \nu_i),
+//' \quad i = 1, \ldots, n.
+//' }
 //' 
 //' @param X An \eqn{n \times k} matrix of outcomes, where the \eqn{i}th row
 //' \eqn{\bm{x}_i^\top} represents the \eqn{i}th observation.
@@ -48,6 +51,10 @@ double normconst_cmm(unsigned int m, const arma::vec& p, double nu,
 //' }
 //' which may be on the log-scale and/or unnormalized
 //' according to input arguments.
+//'
+//' @details
+//' The entire computation for this function is done in C++, and so may be
+//' more efficient than calling \code{d_cmm} in an loop from R.
 //'
 //' @examples
 //' stop("TBD")

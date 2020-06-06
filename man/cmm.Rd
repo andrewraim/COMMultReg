@@ -42,7 +42,8 @@ compute or apply the normalizing constant to each density value.}
 that \code{s} iterations of the sampler will be carried out before saving each
 of the \code{n} requested draws.}
 
-\item{x_init}{TBD}
+\item{x_init}{Initial value for Gibbs sampler. If \code{NULL}, it is set to
+the extreme point \eqn{m \bm{e}_{\ell}} where \eqn{\ell = \textrm{argmax}_{j}\{p_j\}}.}
 
 \item{report_period}{How often to output progress for Gibbs sampler. A value of
 \code{s} means that a progress message will be printed every \code{s} iterations

@@ -23,8 +23,11 @@ double normconst_cmb(unsigned int m, double p, double nu,
 
 //' Density for CMB random sample
 //' 
-//' Compute individual density contributions for observations in an independent, but not necessarily
-//' identically distributed, CMB random sample.
+//' Compute individual density contributions for
+//' \deqn{
+//' X_i \sim \textrm{CMB}(m_i, p_i, \nu_i),
+//' \quad i = 1, \ldots, n.
+//' }
 //' 
 //' @param x An \eqn{n}-dimensional vector of outcomes
 //' @param m An \eqn{n}-dimensional vector \eqn{m_1, \ldots, m_n}
@@ -41,7 +44,7 @@ double normconst_cmb(unsigned int m, double p, double nu,
 //' A vector of density values
 //' \eqn{f(x_1 \mid m_1, p_1, \nu_1), \ldots, f(x_n \mid m_n, p_n, \nu_n),}
 //' which may be on the log-scale and/or unnormalized
-//' according to input arguments.
+//' according to input arguments. See \link{cmb}.
 //'
 //' @examples
 //' stop("TBD")

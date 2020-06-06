@@ -18,7 +18,8 @@
 #' @param report_period How often to output progress for Gibbs sampler. A value of
 #' \code{s} means that a progress message will be printed every \code{s} iterations
 #' of the sampler.
-#' @param x_init TBD
+#' @param x_init Initial value for Gibbs sampler. If \code{NULL}, it is set to
+#' the extreme point \eqn{m \bm{e}_{\ell}} where \eqn{\ell = \textrm{argmax}_{j}\{p_j\}}. 
 #' 
 #' @return The values returned by each function are:
 #' \itemize{
