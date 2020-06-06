@@ -56,7 +56,7 @@ p_hat = fit_out[,-(k+1)]
 nu_hat = fit_out[,k+1]
 
 ecmm_out = matrix(NA, n, k)
-colnames(ecmm_out) = colnames(y)
+colnames(ecmm_out) = sprintf("E(%s)", colnames(y))
 for (i in 1:n) {
 	ecmm_out[i,] = ecmm(as.integer(m[i]), as.numeric(p_hat[i,]), as.numeric(nu_hat[i]))
 }

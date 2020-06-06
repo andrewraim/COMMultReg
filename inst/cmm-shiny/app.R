@@ -1,5 +1,5 @@
 library(shiny)
-library(COMStuff)
+library(COMMultReg)
 
 ui = shinyUI(fluidPage(
 	titlePanel("Trinomial CMM vs. Multinomial"),
@@ -33,20 +33,22 @@ server = shinyServer(function(input, output) {
 		nu = input$nu
 
 		# Set up grid for plotting
-		x = seq(0, m)
-		y = seq(0, m)
+		x_seq = seq(0, m)
+		y_seq = seq(0, m)
 
-		f_xy = matrix(NA, length(x), length(y))
-		for (i in 1:length(x)) {
-			for (j in 1:length(y)) {
-				if (x[i] + y[j] <= m) {
-					f_xy[i,j] = dmultinom(c(x[i], y[j], m - x[i] - y[j]), size = m, prob = p)
+		f_xy = matrix(NA, length(x_seq), length(y_seq))
+		for (i in seq_along(x_seq)) {
+			for (j in seq_along(y_seq)) {
+				x = x_seq[i]
+				y = y_seq[j]
+				if (x + y <= m) {
+					f_xy[i,j] = dmultinom(c(x, y, m - x - y), size = m, prob = p)
 				}
 			}
 		}
 
 		# Plot
-		image(x, y, f_xy, main = "Mult(m, p)", col = rev(heat.colors(10)))
+		image(x_seq, y_seq, f_xy, main = "Mult(m, p)", col = rev(heat.colors(10)))
 	})
 	output$CMMPlot = renderPlot({
 		# Get parameters

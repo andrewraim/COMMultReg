@@ -1,15 +1,5 @@
 library(shiny)
-library(COMStuff)
-library(Rcpp)
-
-d_cmb_sample = function(x, m, p, nu, take_log, normalize) {
-	n = length(x)
-	ff = numeric(n)
-	for (i in 1:n) {
-		ff[i] = d_cmb(x[i], m, p, nu, take_log, normalize)
-	}
-	return(ff)
-}
+library(COMMultReg)
 
 ui = shinyUI(fluidPage(
 	titlePanel("COM-Binomial vs. Binomial"),
@@ -29,9 +19,15 @@ ui = shinyUI(fluidPage(
 server = shinyServer(function(input, output) {
 	output$cmbPlot = renderPlot({
 		m = input$m
-		ff = d_cmb_sample(x = 0:m, m = m, p = input$p, nu = input$nu, normalize = FALSE, take_log = FALSE)
+
 		# Normalize outside to avoid calculating normalizing constant for each input
+		ff = numeric(m+1)
+		for (x in 0:m) {
+			ff[x+1] = d_cmb(x, m, input$p, input$nu, take_log = FALSE, normalize = FALSE)
+		}
 		ff = ff / sum(ff)
+
+		# Plot
 		barplot(ff, names.arg = 0:m, col = "blue")
 		title("CMB(m, p, nu) Density")
 		box()
