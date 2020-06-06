@@ -18,13 +18,37 @@ double d_cmb(unsigned int x, unsigned int m, double p,
 //' @name cmb
 //' @export
 // [[Rcpp::export]]
-double d_cmb_normconst(unsigned int m, double p, double nu,
+double normconst_cmb(unsigned int m, double p, double nu,
 	bool take_log = false);
 
-//' @name cmb
+//' Density for CMB random sample
+//' 
+//' Compute individual density contributions for observations in an independent, but not necessarily
+//' identically distributed, CMB random sample.
+//' 
+//' @param x An \eqn{n}-dimensional vector of outcomes
+//' @param m An \eqn{n}-dimensional vector \eqn{m_1, \ldots, m_n}
+//' @param p An \eqn{n}-dimensional vector of probability parameters
+//' \eqn{p_1, \ldots, p_n}
+//' @param nu An \eqn{n}-dimensional vector of dispersion parameters
+//' \eqn{\nu_1, \ldots, \nu_n}
+//' @param take_log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
+//' value on the log-scale.
+//' @param normalize \code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
+//' compute or apply the normalizing constant to each density value.
+//' 
+//' @return
+//' A vector of density values
+//' \eqn{f(x_1 \mid m_1, p_1, \nu_1), \ldots, f(x_n \mid m_n, p_n, \nu_n),}
+//' which may be on the log-scale and/or unnormalized
+//' according to input arguments.
+//'
+//' @examples
+//' stop("TBD")
+//' 
 //' @export
 // [[Rcpp::export]]
-double loglik_cmb(const arma::vec& y, const arma::vec& m,
+arma::vec d_cmb_sample(const arma::vec& x, const arma::vec& m,
 	const arma::vec& p, const arma::vec& nu);
 
 #endif

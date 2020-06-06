@@ -19,7 +19,7 @@ MultIterator::~MultIterator()
 }
 
 /*
- * The logic here was copied from the function gsl_multiset_next in the
+ * The logic here is from the function gsl_multiset_next in the
  * GSL package; see the file multiset.c in its source code.
  * 
  * Be careful - this can get confusing! A multiset describes the

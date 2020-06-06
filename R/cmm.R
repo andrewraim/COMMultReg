@@ -1,24 +1,56 @@
 #' Conway Maxwell Multinomial distribution
 #' 
-#' Functions for CMM distribution.
+#' Functions for the \eqn{\textrm{CMM}_k(m, \bm{p}, \nu)} distribution.
 #' 
-#' @param x 
-#' @param m 
-#' @param lambda 
-#' @param nu 
-#' @param log
-#' @param take_log
-#' @param normalize 
-#' @param phi 
-#' @param burn
-#' @param R 
-#' @param thin
-#' @param report_period 
-#' @param x_init 
+#' @param x A eqn{k}-dimensional vector representing the outcome.
+#' @param n Number of draws to produce.
+#' @param m Number of trials in the CMB cluster.
+#' @param p Probability parameter; a vector of positive numbers which sums to 1.
+#' @param nu Dispersion parameter.
+#' @param take_log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return
+#' the value on the log-scale.
+#' @param normalize \code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
+#' compute or apply the normalizing constant to each density value.
+#' @param burn Number of initial draws to burn for Gibbs sampler.
+#' @param thin Thinning interval for Gibbs sampler. A value of \code{s} means
+#' that \code{s} iterations of the sampler will be carried out before saving each
+#' of the \code{n} requested draws.
+#' @param report_period How often to output progress for Gibbs sampler. A value of
+#' \code{s} means that a progress message will be printed every \code{s} iterations
+#' of the sampler.
+#' @param x_init TBD
 #' 
-#' @return
+#' @return The values returned by each function are:
+#' \itemize{
+#' \item \code{d_cmm}: a number representing the CMM density \eqn{f(\bm{x} \mid m, \bm{p}, \nu)}.
+#' \item \code{r_cmm}: an \eqn{n \times k} matrix of draws.
+#' \item \code{normconst_cmm}: a number representing the normalizing constant \eqn{C(m, \bm{p}, \nu)}.
+#' \item \code{e_cmm}: a \eqn{k}-dimensional vector representing \eqn{\textrm{E}(\bm{X})}.
+#' \item \code{v_cmm}: a \eqn{k \times k} matrix representing \eqn{\textrm{Var}(\bm{X})}
+#' }
+#'
+#' @details
+#' Let \eqn{\Omega_{m,k}} denote the multinomial sample space. A random variable
+#' \eqn{\bm{X} \sim \textrm{CMM}_k(m, \bm{p}, \nu)} has probability mass function
+#' \deqn{
+#' f(\bm{x} \mid m, \bm{p}, \nu) = C(m, \bm{p}, \nu)^{-1} {m \choose x_1 \cdots x_k}^\nu
+#' p_1^{x_1} \cdots p_k^{x_k}, \quad \bm{x} \in \Omega_{m,k}
+#' }
+#' with
+#' \deqn{
+#' C(m, \bm{p}, \nu) = \sum_{\bm{x} \in \Omega_{m,k}}
+#' {m \choose x_1 \cdots x_k}^\nu
+#' p_1^{x_1} \cdots p_k^{x_k}
+#' }
+#' as the normalizing constant.
+#' 
+#' This package computes CMM density values in C++ to improve the performance of iterating
+#' over the sample space. A Gibbs sampler is used to draw samples from CMM. Further details
+#' can be found in Morris, Raim, and Sellers (2020+).
 #'
 #' @examples
+#' stop("TBD")
+#' 
 #' @name cmm
 NULL
 
@@ -56,7 +88,7 @@ e_cmm = function(m, p, nu)
 	nu_mat = rep(nu, nrow(xx))
 	m_mat = rep(m, nrow(xx))
 
-	f_all_unnorm = d_cmm_vectorized(xx, m_mat, p_mat, nu_mat, take_log = FALSE, normalize = FALSE)
+	f_all_unnorm = d_cmm_sample(xx, m_mat, p_mat, nu_mat, take_log = FALSE, normalize = FALSE)
 	f_all = normalize(f_all_unnorm)
 	as.numeric(t(xx) %*% f_all)
 }
@@ -78,7 +110,7 @@ v_cmm = function(m, p, nu)
 	nu_mat = rep(nu, nrow(xx))
 	m_mat = rep(m, nrow(xx))
 
-	f_all_unnorm = d_cmm_vectorized(xx, m_mat, p_mat, nu_mat, take_log = FALSE, normalize = FALSE)
+	f_all_unnorm = d_cmm_sample(xx, m_mat, p_mat, nu_mat, take_log = FALSE, normalize = FALSE)
 	f_all = as.numeric(normalize(f_all_unnorm))
 	e = as.numeric(t(xx) %*% f_all)
 	t(xx) %*% (f_all * xx) - e %*% t(e)

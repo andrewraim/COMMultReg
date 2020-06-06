@@ -2,11 +2,12 @@ Package: COMMultReg
 Type: Package
 Title: Conway-Maxwell Multinomial Regression
 Version: 0.0.1
-Author: Andrew M. Raim
+Author: Andrew M. Raim, Darcy Steeg Morris
 Maintainer: Andrew M. Raim <andrew.raim@gmail.com>
-Description: R code for Conway-Maxwell Multinomial
+Description: Conway-Maxwell Multinomial. TBD: Mention our paper and MM package for Poissonreg method
 License: GPL (>= 2)
-Depends: Rcpp, combinat, numDeriv, Matrix
+Depends: Rcpp, combinat
 LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 7.1.0
+Encoding: UTF-8
 SystemRequirements: C++11

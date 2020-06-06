@@ -4,49 +4,70 @@
 \alias{cmb}
 \alias{r_cmb}
 \alias{d_cmb}
-\alias{d_cmb_normconst}
-\alias{loglik_cmb}
-\alias{dcmb.old}
-\alias{rcmb.old}
-\alias{dcmb.slow}
-\alias{ecmb}
-\alias{ecmb_factorial2}
+\alias{normconst_cmb}
+\alias{e_cmb}
+\alias{v_cmb}
 \title{Conway Maxwell Binomial distribution}
 \usage{
 r_cmb(n, m, p, nu)
 
 d_cmb(x, m, p, nu, take_log = FALSE, normalize = TRUE)
 
-d_cmb_normconst(m, p, nu, take_log = FALSE)
+normconst_cmb(m, p, nu, take_log = FALSE)
 
-loglik_cmb(y, m, p, nu)
+e_cmb(m, p, nu)
 
-dcmb.old(x, m, p, nu, take_log = FALSE, normalize = TRUE)
-
-rcmb.old(n, m, p, nu)
-
-dcmb.slow(x, m, p, nu, take_log = FALSE, normalize = TRUE)
-
-ecmb(m, p, nu)
-
-ecmb_factorial2(m, p, nu)
+v_cmb(m, p, nu)
 }
 \arguments{
-\item{m}{}
+\item{n}{Number of draws to produce.}
 
-\item{p}{}
+\item{m}{Number of trials in the CMB cluster.}
 
-\item{nu}{}
+\item{p}{Probability parameter}
 
-\item{x}{}
+\item{nu}{Dispersion parameter}
 
-\item{normalize}{}
+\item{x}{A scalar representing the outcome.}
 
-\item{phi}{}
+\item{take_log}{\code{TRUE} or \code{FALSE}; if \code{TRUE}, return
+the value on the log-scale.}
+
+\item{normalize}{\code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
+compute or apply the normalizing constant to each density value.}
 }
 \value{
-
+The values returned by each function are:
+\itemize{
+\item \code{d_cmb}: a number representing the CMB density \eqn{f(x \mid m, p, \nu)}.
+\item \code{r_cmb}: an \eqn{n}-dimensional vector of draws.
+\item \code{normconst_cmb}: a number representing the normalizing constant \eqn{C(m, p, \nu)}.
+\item \code{e_cmb}: a number representing \eqn{\textrm{E}(X)}.
+\item \code{v_cmb}: a number representing \eqn{\textrm{Var}(X)}
+}
 }
 \description{
-Functions for CMB distribution.
+Functions for \eqn{CMB(m, p, \nu)} distribution.
+}
+\details{
+A random variable
+\eqn{X \sim \textrm{CMB}(m, p, \nu)} has probability mass function
+\deqn{
+f(x \mid m, p, \nu) = C(m, p, \nu)^{-1} {m \choose x}^\nu p^{x} (1-p)^{m-x},
+\quad x \in \{0, 1, \ldots, m\}
+}
+with
+\deqn{
+C(m, p, \nu) = \sum_{x = 0}^m
+{m \choose x}^\nu p^{x} (1-p)^{m-x}
+}
+as the normalizing constant.
+
+CMB can be considered a two-dimensional case of CMM. Furthermore, CMB is
+useful in drawing from the general CMM distribution; see
+Morris, Raim, and Sellers (2020+).
+}
+\examples{
+stop("TBD")
+
 }

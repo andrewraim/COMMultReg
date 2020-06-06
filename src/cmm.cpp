@@ -76,7 +76,7 @@ double d_cmm(const arma::vec& x, unsigned int m, const arma::vec& p,
 	if (take_log) { return ll; } else { return exp(ll); }
 }
 
-double d_cmm_normconst(unsigned int m, const arma::vec& p, double nu, bool take_log)
+double normconst_cmm(unsigned int m, const arma::vec& p, double nu, bool take_log)
 {
 	size_t k = p.n_elem;
 	arma::vec x = arma::zeros(k);
@@ -86,31 +86,19 @@ double d_cmm_normconst(unsigned int m, const arma::vec& p, double nu, bool take_
 }
 
 // A special vectorized version of the density that we use elsewhere in the package
-arma::vec d_cmm_vectorized(const arma::mat& x, const arma::vec& m, const arma::mat& p,
+arma::vec d_cmm_sample(const arma::mat& X, const arma::vec& m, const arma::mat& P,
 	const arma::vec& nu, bool take_log, bool normalize)
 {
-	unsigned int n = x.n_rows;
-	unsigned int k = x.n_cols;
-	if (n != m.n_elem || n != p.n_rows || k != p.n_cols || n != nu.n_elem) {
-		Rcpp::stop("Must have length(m) == length(nu) == nrow(x) and dim(x) == dim(p)");
+	unsigned int n = X.n_rows;
+	unsigned int k = X.n_cols;
+	if (n != m.n_elem || n != P.n_rows || k != P.n_cols || n != nu.n_elem) {
+		Rcpp::stop("Must have length(m) == length(nu) == nrow(X) and dim(X) == dim(P)");
 	}
 
 	arma::vec out(n);
 	for (size_t i = 0; i < n; i++) {
-		out(i) = d_cmm(x.row(i).t(), m(i), p.row(i).t(), nu(i), take_log, normalize);
+		out(i) = d_cmm(X.row(i).t(), m(i), P.row(i).t(), nu(i), take_log, normalize);
 	}
 
 	return out;
-}
-
-double loglik_cmm(const arma::mat& y, const arma::vec& m,
-	const arma::mat& P_mat, const arma::vec& nu)
-{
-	unsigned int n = y.n_rows;
-	double ll = 0;
-	for (unsigned int i = 0; i < n; i++) {
-		ll += d_cmm(y.row(i).t(), m(i), P_mat.row(i).t(), nu(i), true, true);
-	}
-
-	return ll;
 }

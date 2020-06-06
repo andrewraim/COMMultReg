@@ -2,6 +2,44 @@
 # - https://stackoverflow.com/questions/36605955/c-function-not-available
 # - https://cran.r-project.org/web/packages/roxygen2/vignettes/namespace.html
 
+#' Conway-Maxwell-Multinomial Regression
+#' 
+#' @details
+#' This package provides basic drawing and density functions for the
+#' Conway-Maxwell-Multinomial (CMM) distribution, as well as functions to
+#' carry out maximum likelihood estimation (MLE) for a regression model
+#' based on CMM. The MLE method was inspired by Altham and Hankin (2012).
+#' Further details can be found in Morris, Raim, Sellers (2020+).
+#' 
+#' Computationally intensive sections are carried out in C++ with the help
+#' of Rcpp and RcppArmadillo. Logic to iterate through the multinomial sample
+#' space, without pre-generating the elements, is from the function
+#' `gsl_multiset_next` in the GNU GSL library (Galassi et al).
+#' 
 #' @useDynLib COMMultReg, .registration = TRUE
 #' @importFrom Rcpp evalCpp
+#' @importFrom combinat xsimplex
+#' 
+#' @name COMMultReg-package
+#' 
+#' @references 
+#' Pat M. E. Altham and Robin K. S. Hankin (2012). Multivariate generalizations
+#' of the multiplicative binomial distribution: Introducing the MM package.
+#' Journal of Statistical Software 46.
+#' 
+#' Darcy Steeg Morris, Andrew M. Raim, and Kimberly F. Sellers (2020+).
+#' A Conway-Maxwell-multinomial distribution for Flexible modeling
+#' of clustered categorical data. (Accepted for publication in
+#' Journal of Multivariate Analysis).
+#' Preprint: https://arxiv.org/abs/1911.02131.
+#' 
+#' Dirk Eddelbuettel (2013) Seamless R and C++ Integration with Rcpp.
+#' Springer, New York. ISBN
+#' 
+#' Dirk Eddelbuettel, Conrad Sanderson (2014). RcppArmadillo: Accelerating
+#' R with high-performance C++ linear algebra. Computational Statistics and
+#' Data Analysis, Volume 71, March 2014, pages 1054-1063.
+#' 
+#' M. Galassi et al, GNU Scientific Library Reference Manual, 3rd Edition,
+#' ISBN 0954612078.
 NULL

@@ -1,102 +1,86 @@
 #' Conway Maxwell Binomial distribution
 #' 
-#' Functions for CMB distribution.
+#' Functions for \eqn{CMB(m, p, \nu)} distribution.
 #' 
-#' @param x 
-#' @param m 
-#' @param p 
-#' @param nu 
-#' @param take_log
-#' @param normalize 
-#' @param phi 
+#' @param x A scalar representing the outcome.
+#' @param n Number of draws to produce.
+#' @param m Number of trials in the CMB cluster.
+#' @param p Probability parameter
+#' @param nu Dispersion parameter
+#' @param take_log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return
+#' the value on the log-scale.
+#' @param normalize \code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
+#' compute or apply the normalizing constant to each density value.
 #' 
-#' @return
-#'
+#' @return The values returned by each function are:
+#' \itemize{
+#' \item \code{d_cmb}: a number representing the CMB density \eqn{f(x \mid m, p, \nu)}.
+#' \item \code{r_cmb}: an \eqn{n}-dimensional vector of draws.
+#' \item \code{normconst_cmb}: a number representing the normalizing constant \eqn{C(m, p, \nu)}.
+#' \item \code{e_cmb}: a number representing \eqn{\textrm{E}(X)}.
+#' \item \code{v_cmb}: a number representing \eqn{\textrm{Var}(X)}
+#' }
+#' 
+#' @details
+#' A random variable
+#' \eqn{X \sim \textrm{CMB}(m, p, \nu)} has probability mass function
+#' \deqn{
+#' f(x \mid m, p, \nu) = C(m, p, \nu)^{-1} {m \choose x}^\nu p^{x} (1-p)^{m-x},
+#' \quad x \in \{0, 1, \ldots, m\}
+#' }
+#' with
+#' \deqn{
+#' C(m, p, \nu) = \sum_{x = 0}^m
+#' {m \choose x}^\nu p^{x} (1-p)^{m-x}
+#' }
+#' as the normalizing constant.
+#' 
+#' CMB can be considered a two-dimensional case of CMM. Furthermore, CMB is
+#' useful in drawing from the general CMM distribution; see
+#' Morris, Raim, and Sellers (2020+).
+#' 
 #' @examples
+#' stop("TBD")
+#' 
 #' @name cmb
 NULL
 
+# Expected value of CMB, computed from the definition of E(X)
 #' @name cmb
 #' @export
-dcmb.old <- function(x, m, p, nu, take_log = FALSE, normalize = TRUE)
-{
-	stopifnot(all(is.integer(x)))
-	stopifnot(all(is.integer(m)))
-	stopifnot(all(0 < p & p < 1))
-
-	n <- length(x)
-	if (length(m) == 1) { m <- rep(m, n) }
-	if (length(p) == 1) { p <- rep(p, n) }
-	if (length(nu) == 1) { nu <- rep(nu, n) }
-	fx <- dcmb_cpp(as.numeric(x), as.numeric(m), p, nu, take_log, normalize)
-	as.numeric(fx)
-}
-
-#' @name cmb
-#' @export
-rcmb.old <- function(n, m, p, nu)
-{
-	stopifnot(is.integer(m))
-	stopifnot(all(is.integer(m)))
-	stopifnot(all(0 < p & p < 1))
-
-	if (length(m) == 1) { m <- rep(m, n) }
-	if (length(p) == 1) { p <- rep(p, n) }
-	if (length(nu) == 1) { nu <- rep(nu, n) }
-	x <- rcmb_cpp(n, as.numeric(m), p, nu)
-	as.integer(x)
-}
-
-# A slow / pure-R version of CMB density, purely for comparison
-#' @name cmb
-#' @export
-dcmb.slow <- function(x, m, p, nu, take_log = FALSE, normalize = TRUE)
-{
-	n <- length(x)
-	if (length(m) == 1) { m <- rep(m, n) }
-	if (length(p) == 1) { p <- rep(p, n) }
-	if (length(nu) == 1) { nu <- rep(nu, n) }
-	exp(nu*lgamma(m+1) - nu*lgamma(x+1) - nu*lgamma(m-x+1) +
-		x*log(p) + (m-x)*log(1-p))
-}
-
-# Expected value of CMB, from the definition of E(X)
-#' @name cmb
-#' @export
-ecmb <- function(m, p, nu)
+e_cmb = function(m, p, nu)
 {
 	stopifnot(length(m) == 1)
 	stopifnot(length(p) == 1)
 	stopifnot(length(nu) == 1)
 	stopifnot(is.integer(m))
 
-	xx <- 0:m
-	f.all.unnorm <- numeric(m+1)
+	xx = 0:m
+	f_all_unnorm = numeric(m+1)
 	for (i in seq_along(xx)) {
-		f.all.unnorm[i] <- d_cmb(xx[i], m, p, nu, take_log = FALSE, normalize = FALSE)
+		f_all_unnorm[i] = d_cmb(xx[i], m, p, nu, take_log = FALSE, normalize = FALSE)
 	}
 
-	f.all <- normalize(f.all.unnorm)
-	sum(xx * f.all)
+	f_all = normalize(f_all_unnorm)
+	sum(xx * f_all)
 }
 
-# Expected 2nd factorial moment of CMB, from the definition of E[X(X-1)]
+# Variance of CMB, computed from the definition of Var(X)
 #' @name cmb
 #' @export
-ecmb_factorial2 <- function(m, p, nu)
+v_cmb = function(m, p, nu)
 {
 	stopifnot(length(m) == 1)
 	stopifnot(length(p) == 1)
 	stopifnot(length(nu) == 1)
 	stopifnot(is.integer(m))
 
-	xx <- 0:m
-	f.all.unnorm <- numeric(m+1)
+	xx = 0:m
+	f_all_unnorm = numeric(m+1)
 	for (i in seq_along(xx)) {
-		f.all.unnorm[i] <- d_cmb(xx[i], m, p, nu, take_log = FALSE, normalize = FALSE)
+		f_all_unnorm[i] = d_cmb(xx[i], m, p, nu, take_log = FALSE, normalize = FALSE)
 	}
 
-	f.all <- normalize(f.all.unnorm)
-	sum(xx * (xx-1) * f.all)
+	f_all = normalize(f_all_unnorm)
+	sum(xx^2 * f_all) - sum(xx * f_all)^2
 }
-

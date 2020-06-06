@@ -4,7 +4,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
 
-//' @name cmm
 //' @export
 // [[Rcpp::export]]
 Rcpp::List gunterize(const arma::umat& X, bool all = false);

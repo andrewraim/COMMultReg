@@ -2,20 +2,23 @@
 #' 
 #' Functions for CMM Regression.
 #' 
-#' @param y 
-#' @param m 
-#' @param X 
-#' @param W 
-#' @param base 
-#' @param par_init
-#' @param control 
+#' @param y TBD
+#' @param m TBD
+#' @param X TBD
+#' @param W TBD
+#' @param base TBD
+#' @param par_init TBD
+#' @param control TBD
 #' 
 #' @return
 #'
 #' @examples
-#' @name cmm
+#' print("TBD")
+#' 
+#' @name cmm_reg
 NULL
 
+#' @name cmm_reg
 #' @export
 cmm_reg = function(y, m, X, W, base = 1, par_init = NULL, control = NULL)
 {
@@ -49,19 +52,31 @@ cmm_reg = function(y, m, X, W, base = 1, par_init = NULL, control = NULL)
 	return(out)
 }
 
+#' @name cmm_reg
 #' @export
 cmm_reg_control = function(tol = 1e-8, verbose = FALSE, max_iter = 200)
 {
 	list(tol = tol, verbose = verbose, max_iter = max_iter)
 }
 
-#' @export
+check_par = function(par, dat_xform)
+{
+	stopifnot(!is.null(par_init[["mu"]]))
+	stopifnot(!is.null(par_init[["beta"]]))
+	stopifnot(!is.null(par_init[["gamma"]]))
+	mu = par_init[["mu"]]
+	beta = par_init[["beta"]]
+	gamma = par_init[["gamma"]]
+
+	L = length(dat_xform)
+	stopifnot(L == length(mu))
+}
+
 par2vec = function(par)
 {
 	as.numeric(c(par$mu, par$gamma, as.numeric(par$beta)))
 }
 
-#' @export
 vec2par = function(vartheta, L, p_x, p_w, k)
 {
 	list(
@@ -71,7 +86,6 @@ vec2par = function(vartheta, L, p_x, p_w, k)
 	)
 }
 
-#' @export
 transform_data = function(y, m, X, W, tol = 1e-8)
 {
 	n = nrow(y)
@@ -115,7 +129,6 @@ transform_data = function(y, m, X, W, tol = 1e-8)
 	return(dat_grp)
 }
 
-#' @export
 loglik_cmm_xform = function(par, dat_xform, base = 1)
 {
 	L = length(dat_xform)
@@ -166,7 +179,6 @@ loglik_cmm_xform = function(par, dat_xform, base = 1)
 	return(ll)
 }
 
-#' @export
 newton_raphson = function(par_init, dat_xform, base = 1, xnames = NULL,
 	wnames = NULL, tol = 1e-6, max_iter = 100, verbose = FALSE)
 {
@@ -226,12 +238,14 @@ newton_raphson = function(par_init, dat_xform, base = 1, xnames = NULL,
 	return(ret)
 }
 
+#' @name cmm_reg
 #' @export
 logLik.cmm_reg = function(object, ...)
 {
 	object$loglik
 }
 
+#' @name cmm_reg
 #' @export
 AIC.cmm_reg = function(object, ..., k = 2)
 {
@@ -239,6 +253,7 @@ AIC.cmm_reg = function(object, ..., k = 2)
 	-2*logLik(object) + k*p
 }
 
+#' @name cmm_reg
 #' @export
 coef.cmm_reg = function(object, ...)
 {
@@ -247,6 +262,7 @@ coef.cmm_reg = function(object, ...)
 	vartheta[idx]
 }
 
+#' @name cmm_reg
 #' @export
 vcov.cmm_reg = function(object, extended = FALSE, ...)
 {
@@ -278,7 +294,7 @@ fitted.cmm_reg = function(object, newX, newW, ...)
 
 	stopifnot(ncol(newX) == p_x)
 	stopifnot(ncol(newW) == p_w)
-	
+
 	dat = data.frame(
 		t(apply(newX %*% par$beta, 1, inv_mlogit, base = base)),
 		newW %*% par$gamma
@@ -287,6 +303,7 @@ fitted.cmm_reg = function(object, newX, newW, ...)
 	return(dat)
 }
 
+#' @name cmm_reg
 #' @export
 print.cmm_reg = function(x, ...)
 {
@@ -340,17 +357,4 @@ print.cmm_reg = function(x, ...)
 	printf("Tolerance: %g\n", x$tol)
 	printf("LogLik: %0.4f   ", logLik(x))
 	printf("AIC: %0.4f\n", AIC(x))
-}
-
-check_par = function(par, dat_xform)
-{
-	stopifnot(!is.null(par_init[["mu"]]))
-	stopifnot(!is.null(par_init[["beta"]]))
-	stopifnot(!is.null(par_init[["gamma"]]))
-	mu = par_init[["mu"]]
-	beta = par_init[["beta"]]
-	gamma = par_init[["gamma"]]
-
-	L = length(dat_xform)
-	stopifnot(L == length(mu))
 }
