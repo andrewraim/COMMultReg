@@ -8,6 +8,7 @@
 \alias{AIC.cmm_reg}
 \alias{coef.cmm_reg}
 \alias{vcov.cmm_reg}
+\alias{get_par_names}
 \alias{print.cmm_reg}
 \title{Conway Maxwell Multinomial Regression}
 \usage{
@@ -29,9 +30,11 @@ cmm_reg_control(base = 1, tol = 1e-08, verbose = FALSE, max_iter = 200)
 
 \method{AIC}{cmm_reg}(object, ..., k = 2)
 
-\method{coef}{cmm_reg}(object, ...)
+\method{coef}{cmm_reg}(object, extended = FALSE, ...)
 
 \method{vcov}{cmm_reg}(object, extended = FALSE, ...)
+
+get_par_names(object, extended = FALSE, ...)
 
 \method{print}{cmm_reg}(x, ...)
 }

@@ -2,10 +2,13 @@
 #' 
 #' Functions for CMM Regression.
 #' 
+#' @param formula_x
+#' @param formula_w
 #' @param y TBD
 #' @param X TBD
 #' @param W TBD
 #' @param base TBD
+#' @param extended TBD
 #' @param par_init TBD
 #' @param control TBD
 #' 
@@ -101,11 +104,31 @@ cmm_reg_raw = function(y, X, W, par_init = NULL, control = NULL)
 
 	out = newton_raphson(par_init = par_init, dat_xform = dat_xform,
 		max_iter = control$max_iter, verbose = control$verbose,
-		base = control$base, tol = control$tol,
-		xnames = colnames(X), wnames = colnames(W))
+		base = control$base, tol = control$tol)
+	
+	# Make some adjustments to the Newton Raphson output and return it
+	class(out) = "cmm_reg"
 	out$loglik_poisson = out$loglik
 	out$base = control$base
 	out$loglik = loglik_cmm_xform(out$par, dat_xform, base = control$base)
+	out$y = y
+	out$X = X
+	out$W = W
+
+	# Make sure labels for results are set properly
+	out$xnames = colnames(X)
+	colnames(out$par$beta) = sprintf("cat%d", (1:k)[-control$base])
+	if (is.null(out$xnames)) {
+		rownames(out$par$beta) = sprintf("X%d", 1:p_x)
+	} else if (length(out$xnames) != p_x) {
+		warning("length of xnames does not match ncol(X)")
+	} else {
+		rownames(out$par$beta) = out$xnames
+	}
+
+	out$wnames = colnames(W)
+	names(out$par$gamma) = out$wnames
+
 	return(out)
 }
 
@@ -134,12 +157,12 @@ par2vec = function(par)
 	as.numeric(c(par$mu, par$gamma, as.numeric(par$beta)))
 }
 
-vec2par = function(vartheta, L, p_x, p_w, k)
+vec2par = function(coefs, L, p_x, p_w, k)
 {
 	list(
-		mu = vartheta[1:L],
-		gamma = vartheta[L + 1:p_w],
-		beta = matrix(vartheta[L + p_w + seq_len(p_x*(k-1))], p_x, k-1)
+		mu = coefs[1:L],
+		gamma = coefs[L + 1:p_w],
+		beta = matrix(coefs[L + p_w + seq_len(p_x*(k-1))], p_x, k-1)
 	)
 }
 
@@ -189,8 +212,8 @@ transform_data = function(y, m, X, W, tol = 1e-8)
 loglik_cmm_xform = function(par, dat_xform, base = 1)
 {
 	L = length(dat_xform)
-	vartheta = par2vec(par)
-	qq = length(vartheta)
+	coefs = par2vec(par)
+	qq = length(coefs)
 	ll = 0
 
 	if (TRUE) {
@@ -208,8 +231,8 @@ loglik_cmm_xform = function(par, dat_xform, base = 1)
 					logchoose(dat$z_obs[i,]) * t(dat$w),
 					t(dat$z_obs[i,-base]) %x% t(dat$x)
 				)
-				svartheta = sum(s * vartheta)
-				ll = ll + dat$freqs[i] * svartheta
+				scoefs = sum(s * coefs)
+				ll = ll + dat$freqs[i] * scoefs
 			}
 		}
 	} else {
@@ -236,8 +259,8 @@ loglik_cmm_xform = function(par, dat_xform, base = 1)
 	return(ll)
 }
 
-newton_raphson = function(par_init, dat_xform, base = 1, xnames = NULL,
-	wnames = NULL, tol = 1e-6, max_iter = 100, verbose = FALSE)
+newton_raphson = function(par_init, dat_xform, base = 1, tol = 1e-6,
+	max_iter = 100, verbose = FALSE)
 {
 	L = length(dat_xform)
 	p_x = nrow(par_init$beta)
@@ -245,21 +268,21 @@ newton_raphson = function(par_init, dat_xform, base = 1, xnames = NULL,
 	k = ncol(par_init$beta) + 1
 
 	delta = Inf
-	vartheta = par2vec(par_init)
+	coefs = par2vec(par_init)
 	iter = 0
 	st = Sys.time()
 
 	if (verbose) {
 		out = loglik_score_fim_cmm(par_init, dat_xform, base = base)
 		logger("iter 0: Poisson loglik: %g\n", out$loglik)
-		print(vartheta[-(1:L)])
+		print(coefs[-(1:L)])
 	}
 
 	while (delta > tol && iter < max_iter) {
 		iter = iter + 1
-		vartheta_old = vartheta
+		coefs_old = coefs
 
-		par = vec2par(vartheta, L, p_x, p_w, k)
+		par = vec2par(coefs, L, p_x, p_w, k)
 		out = loglik_score_fim_cmm(par, dat_xform, base = base)
 		move = tryCatch({
 			solve(out$fim, out$score)
@@ -267,31 +290,19 @@ newton_raphson = function(par_init, dat_xform, base = 1, xnames = NULL,
 			warning("FIM was close to singular, trying pseudo-inverse instead...")
 			pinv(out$fim) %*% out$score
 		})
-		vartheta = vartheta + move
-		delta = sum(abs(vartheta - vartheta_old))
+		coefs = coefs + move
+		delta = sum(abs(coefs - coefs_old))
 
 		if (verbose) {
 			logger("iter %d: Poisson loglik: %g delta: %g\n", iter, out$loglik, delta)
-			print(vartheta[-(1:L)])
+			print(coefs[-(1:L)])
 		}
 	}
 
 	elapsed_sec = as.numeric(Sys.time() - st, units = "secs")
 
-	par = vec2par(vartheta, L, p_x, p_w, k)
-	colnames(par$beta) = sprintf("cat%d", (1:k)[-base])
-	if (is.null(xnames)) {
-		rownames(par$beta) = sprintf("X%d", 1:p_x)
-	} else if (length(xnames) != p_x) {
-		warning("length of xnames does not match ncol(X)")
-	} else {
-		rownames(par$beta) = xnames
-	}
-
 	ret = list(par = par, loglik = out$loglik, score = out$score,
-		fim = out$fim, tol = delta, iter = iter, L = L,
-		xnames = xnames, wnames = wnames, elapsed_sec = elapsed_sec)
-	class(ret) = "cmm_reg"
+		fim = out$fim, tol = delta, iter = iter, L = L, elapsed_sec = elapsed_sec)
 	return(ret)
 }
 
@@ -312,25 +323,33 @@ AIC.cmm_reg = function(object, ..., k = 2)
 
 #' @name cmm_reg
 #' @export
-coef.cmm_reg = function(object, ...)
+coef.cmm_reg = function(object, extended = FALSE, ...)
 {
-	vartheta = par2vec(object$par)
-	idx = setdiff(1:length(vartheta), 1:object$L)
-	vartheta[idx]
+	if (extended) {
+		ret = object$par
+	} else {
+		ret = list(gamma = object$par$gamma, beta = object$par$beta)
+	}
+	return(ret)
 }
 
 #' @name cmm_reg
 #' @export
 vcov.cmm_reg = function(object, extended = FALSE, ...)
 {
-	vartheta = par2vec(object$par)	
-	idx = setdiff(1:length(vartheta), 1:object$L)
+	coefs = par2vec(object$par)	
+	idx = setdiff(1:length(coefs), 1:object$L)
 	V = tryCatch({
 		solve(object$fim)
 	}, error = function(e) {
 		warning("FIM was close to singular, trying pseudo-inverse instead...")
 		pinv(object$fim)
 	})
+
+	par_names = get_par_names(object, extended = TRUE)
+	rownames(V) = par_names
+	colnames(V) = par_names
+
 	if (extended) {
 		return(V)	
 	} else {	
@@ -362,47 +381,63 @@ fitted.cmm_reg = function(object, newX, newW, ...)
 
 #' @name cmm_reg
 #' @export
-print.cmm_reg = function(x, ...)
+get_par_names = function(object, extended = FALSE, ...)
 {
-	vartheta = par2vec(x$par)
-	idx = setdiff(1:length(vartheta), 1:x$L)
-	V = vcov(x, extended = TRUE)
-	se = sqrt(diag(V))
-	zval = vartheta / se
-	pval = 2 * (1 - pnorm(abs(zval)))
+	par = coef(object, extended = TRUE)
+	L = length(par$mu)
+	k = ncol(par$beta) + 1
+	p_x = nrow(par$beta)
+	p_w = length(par$gamma)
 
-	dat = data.frame(
-		estimate = vartheta[idx],
-		se = se[idx],
-		zval = zval[idx],
-		pval = pval[idx]
-	)
-
-	k = ncol(x$par$beta) + 1
-	p_x = nrow(x$par$beta)
-	p_w = nrow(x$par$gamma)
-
-	xnames = x$xnames
-	cats = setdiff(1:k, x$base)
+	xnames = object$xnames
+	cats = setdiff(1:k, object$base)
 	if (is.null(xnames)) {
 		label_var = rep(1:p_x, times = k-1)
 		label_dim = rep(cats, each = p_x)
 		snames = sprintf("%d:beta%d", label_dim, label_var)
 	} else {
-		stopifnot(length(xnames) == nrow(x$par$beta))
+		stopifnot(length(xnames) == nrow(par$beta))
 		label_var = rep(xnames, times = k-1)
 		label_dim = rep(cats, each = p_x)
 		snames = sprintf("%d:%s", label_dim, xnames)
 	}
 
-	wnames = x$wnames
+	wnames = object$wnames
 	if (is.null(wnames)) {
-		wnames = sprintf("gamma%d", 1:length(x$par$gamma))
+		wnames = sprintf("gamma%d", 1:length(par$gamma))
 	} else {
-		stopifnot(length(wnames) == length(x$par$gamma))
+		stopifnot(length(wnames) == length(par$gamma))
 	}
 
-	rownames(dat) = c(wnames, snames)
+	if (extended) {
+		munames = sprintf("mu%d", 1:L)
+		return(c(munames, wnames, snames))
+	} else {
+		return(c(wnames, snames))
+	}
+}
+
+#' @name cmm_reg
+#' @export
+print.cmm_reg = function(x, ...)
+{
+	coefs_ext = par2vec(x$par)
+	idx = setdiff(seq_along(coefs_ext), 1:x$L)
+	coefs = coefs_ext[idx]
+
+	V = vcov(x)
+	se = sqrt(diag(V))
+	zval = coefs / se
+	pval = 2 * (1 - pnorm(abs(zval)))
+
+	dat = data.frame(
+		estimate = coefs[idx],
+		se = se,
+		zval = zval,
+		pval = pval
+	)
+
+	rownames(dat) = get_par_names(x)
 
 	printf("Fit for CMM model:\n")
 	printf("--- Parameter Estimates ---\n")
