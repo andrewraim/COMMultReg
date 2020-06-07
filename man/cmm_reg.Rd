@@ -22,7 +22,7 @@ cmm_reg(
   ...
 )
 
-cmm_reg_raw(y, X, W, par_init = NULL, control = NULL)
+cmm_reg_raw(y, X, W, beta_init = NULL, gamma_init = NULL, control = NULL)
 
 cmm_reg_control(base = 1, tol = 1e-08, verbose = FALSE, max_iter = 200)
 
@@ -39,6 +39,10 @@ get_par_names(object, extended = FALSE, ...)
 \method{print}{cmm_reg}(x, ...)
 }
 \arguments{
+\item{formula_x}{TBD}
+
+\item{formula_w}{TBD}
+
 \item{control}{TBD}
 
 \item{y}{TBD}
@@ -47,9 +51,9 @@ get_par_names(object, extended = FALSE, ...)
 
 \item{W}{TBD}
 
-\item{par_init}{TBD}
+\item{extended}{TBD}
 
-\item{base}{TBD}
+\item{par_init}{TBD}
 }
 \value{
 

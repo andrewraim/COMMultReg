@@ -2,12 +2,11 @@
 #' 
 #' Functions for CMM Regression.
 #' 
-#' @param formula_x
-#' @param formula_w
+#' @param formula_x TBD
+#' @param formula_w TBD
 #' @param y TBD
 #' @param X TBD
 #' @param W TBD
-#' @param base TBD
 #' @param extended TBD
 #' @param par_init TBD
 #' @param control TBD
@@ -31,7 +30,31 @@
 #' \nu_i = \bm{w}_i^\top \bm{\gamma}.
 #' }
 #' The first category is assumed to be the baseline by default, but this can be
-#' changed to category \code{a} by specifying the \code{base = a} argument.
+#' changed to category \code{b} by specifying the \code{base = b} argument.
+#' 
+#' Fitting is carried out with a Newton-Raphson algorithm on the extended parameter
+#' \eqn{\bm{\vartheta} = (\bm{\mu}, \bm{\gamma}, \bm{\beta})}, where \eqn{\bm{\mu}}
+#' contains elements of the form \eqn{-\log C(\bm{p}, \nu; m) + m \log p_b} which is
+#' typically not of direct interest to the analyst. See Morris, Raim, and
+#' Sellers (2020+) for further details.
+#' 
+#' Let \eqn{\bm{\vartheta}^{(g)}} denote the estimate from the \eqn{g}th iteration.
+#' The algorithm is considered to have converged when 
+#' \eqn{\sum_{j=1}^q |\vartheta_j^{(g)} - \vartheta_j^{(g-1)}|}
+#' is sufficiently small, or failed to converge when a maximum number of iterations
+#' has been reached. These values can be specified via the \code{control} argument.
+#'
+#' The \code{control} argument is a list which may provide any of the following:
+#' \itemize{
+#' \item \code{base} in an integer which specifies which category is considered
+#' the baseline. The default is 1.
+#' \item \code{tol} specifies the convergence tolerance for the Newton-Raphson
+#' algorithm. The default is \code{1e-8}. 
+#' \item \code{verbose} is a boolean; if \code{TRUE}, print informative
+#' messages during fitting. Default is \code{FALSE}.
+#' \item \code{max_iter} specifies the maximum number of Newton-Raphson
+#' iterations to be carried out. Default is \code{200}.
+#' }
 #'
 #' @examples
 #' print("TBD")
@@ -72,36 +95,35 @@ cmm_reg = function(formula_x, formula_w = ~ 1, data = NULL,
 	n = nrow(y)
 	k = ncol(k)
 
-	# TBD: Do something better with par_init
-	cmm_reg_raw(y, X, W, par_init = NULL, control = control)
+	cmm_reg_raw(y = y, X = X, W = W, beta_init = beta_init,
+		gamma_init = gamma_init, control = control)
 }
 
 #' @name cmm_reg
 #' @export
-cmm_reg_raw = function(y, X, W, par_init = NULL, control = NULL)
+cmm_reg_raw = function(y, X, W, beta_init = NULL, gamma_init = NULL, control = NULL)
 {
-	m = rowSums(y)
 	k = ncol(y)
 	p_x = ncol(X)
 	p_w = ncol(W)
 
-	dat_xform = transform_data(y, m, X, W)
+	dat_xform = transform_data(y, X, W)
 	L = length(dat_xform)
-
-	if (is.null(par_init)) {
-		par_init = list(
-			mu = numeric(L),
-			beta = matrix(0, p_x, k-1),
-			gamma = numeric(p_w)
-		)
-	} else {
-		check_par(par_init, dat_xform)
-	}
 
 	if (is.null(control)) {
 		control = cmm_reg_control()
 	}
+	if (is.null(beta_init)) {
+		beta_init = matrix(0, p_x, k-1)
+	}
+	if (is.null(gamma_init)) {
+		gamma_init = numeric(p_w)
+	}
 
+	# Set mu_init to something consistent with other initial values
+	mu_init = extended_intercepts(dat_xform, control$base, beta_init, gamma_init)
+
+	par_init = list(mu = mu_init, gamma = gamma_init, beta = beta_init)
 	out = newton_raphson(par_init = par_init, dat_xform = dat_xform,
 		max_iter = control$max_iter, verbose = control$verbose,
 		base = control$base, tol = control$tol)
@@ -139,19 +161,6 @@ cmm_reg_control = function(base = 1, tol = 1e-8, verbose = FALSE, max_iter = 200
 	list(base = base, tol = tol, verbose = verbose, max_iter = max_iter)
 }
 
-check_par = function(par, dat_xform)
-{
-	stopifnot(!is.null(par_init[["mu"]]))
-	stopifnot(!is.null(par_init[["beta"]]))
-	stopifnot(!is.null(par_init[["gamma"]]))
-	mu = par_init[["mu"]]
-	beta = par_init[["beta"]]
-	gamma = par_init[["gamma"]]
-
-	L = length(dat_xform)
-	stopifnot(L == length(mu))
-}
-
 par2vec = function(par)
 {
 	as.numeric(c(par$mu, par$gamma, as.numeric(par$beta)))
@@ -166,10 +175,11 @@ vec2par = function(coefs, L, p_x, p_w, k)
 	)
 }
 
-transform_data = function(y, m, X, W, tol = 1e-8)
+transform_data = function(y, X, W, tol = 1e-8)
 {
 	n = nrow(y)
 	k = ncol(y)
+	m = rowSums(y)
 	p_x = ncol(X)
 	p_w = ncol(W)
 	if (length(m) == 1) { m = rep(m,n) }
@@ -207,6 +217,24 @@ transform_data = function(y, m, X, W, tol = 1e-8)
 	}
 
 	return(dat_grp)
+}
+
+# Compute the extended intercepts ("mu") for a given beta and gamma.
+# These depend on the data, which we take in transformed format.
+extended_intercepts = function(dat_xform, base, beta, gamma)
+{
+	L = length(dat_xform)
+	mu = numeric(L)
+
+	for (l in 1:L) {
+		dat = dat_xform[[l]]
+		m = dat$m
+		p = inv_mlogit(dat$x %*% beta)
+		nu = dat$w %*% gamma
+		mu[l] = -normconst_cmm(m, p, nu, take_log = TRUE) + m*log(p[base])
+	}
+
+	return(mu)
 }
 
 loglik_cmm_xform = function(par, dat_xform, base = 1)
