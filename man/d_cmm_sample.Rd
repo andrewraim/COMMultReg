@@ -4,13 +4,11 @@
 \alias{d_cmm_sample}
 \title{Density for CMM random sample}
 \usage{
-d_cmm_sample(X, m, P, nu, take_log = FALSE, normalize = TRUE)
+d_cmm_sample(X, P, nu, take_log = FALSE, normalize = TRUE)
 }
 \arguments{
 \item{X}{An \eqn{n \times k} matrix of outcomes, where the \eqn{i}th row
 \eqn{\bm{x}_i^\top} represents the \eqn{i}th observation.}
-
-\item{m}{An \eqn{n}-dimensional vector \eqn{m_1, \ldots, m_n}}
 
 \item{P}{An \eqn{n \times k} matrix, where the \eqn{i}th row
 \eqn{\bm{p}_i^\top} represents the probability parameter for the
@@ -33,7 +31,8 @@ f(\bm{x}_1^\top \mid m_1, \bm{p}_1^\top, \nu_1),
 f(\bm{x}_n^\top \mid m_n, \bm{p}_n^\top, \nu_n),
 }
 which may be on the log-scale and/or unnormalized
-according to input arguments.
+according to input arguments. The value of each
+\eqn{m_i} is assumed to be \eqn{\sum_{j=1}^k x_{ij}}.
 }
 \description{
 Compute individual density contributions for 
@@ -43,10 +42,33 @@ Compute individual density contributions for
 }
 }
 \details{
-The entire computation for this function is done in C++, and so may be
-more efficient than calling \code{d_cmm} in an loop from R.
+The entire computation for this function is done in C++, and therefore
+may be more efficient than calling \code{d_cmm} in a loop from R.
 }
 \examples{
-stop("TBD")
+set.seed(1234)
+
+n = 20
+m = rep(10, n)
+k = 3
+
+x = rnorm(n)
+X = model.matrix(~ x)
+beta = matrix(NA, 2, k-1)
+beta[1,] = -1
+beta[2,] = 1
+P = t(apply(X \%*\% beta, 1, inv_mlogit))
+
+w = rnorm(n)
+W = model.matrix(~ x)
+gamma = c(1, -0.1)
+nu = X \%*\% gamma
+
+y = matrix(NA, n, k)
+for (i in 1:n) {
+    y[i,] = r_cmm(1, m[i], P[i,], nu[i], burn = 200)
+}
+
+d_cmm_sample(y, P, nu, take_log = TRUE)
 
 }

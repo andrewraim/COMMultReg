@@ -1,6 +1,6 @@
 #' Conway Maxwell Binomial distribution
 #' 
-#' Functions for \eqn{CMB(m, p, \nu)} distribution.
+#' Functions for \eqn{\textrm{CMB}(m, p, \nu)} distribution.
 #' 
 #' @param x A scalar representing the outcome.
 #' @param n Number of draws to produce.
@@ -40,7 +40,16 @@
 #' Morris, Raim, and Sellers (2020+).
 #' 
 #' @examples
-#' stop("TBD")
+#' set.seed(1234)
+#' m = 10
+#' p = 0.7
+#' nu = 0.8
+#' 
+#' x = r_cmb(100, m, p, nu)
+#' d_cmb(x[1], m, p, nu, take_log = TRUE)
+#' normconst_cmb(m, p, nu, take_log = TRUE)
+#' e_cmb(m, p, nu)
+#' v_cmb(m, p, nu)
 #' 
 #' @name cmb
 NULL
@@ -53,7 +62,6 @@ e_cmb = function(m, p, nu)
 	stopifnot(length(m) == 1)
 	stopifnot(length(p) == 1)
 	stopifnot(length(nu) == 1)
-	stopifnot(is.integer(m))
 
 	xx = 0:m
 	f_all_unnorm = numeric(m+1)
@@ -73,7 +81,6 @@ v_cmb = function(m, p, nu)
 	stopifnot(length(m) == 1)
 	stopifnot(length(p) == 1)
 	stopifnot(length(nu) == 1)
-	stopifnot(is.integer(m))
 
 	xx = 0:m
 	f_all_unnorm = numeric(m+1)

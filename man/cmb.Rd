@@ -47,7 +47,7 @@ The values returned by each function are:
 }
 }
 \description{
-Functions for \eqn{CMB(m, p, \nu)} distribution.
+Functions for \eqn{\textrm{CMB}(m, p, \nu)} distribution.
 }
 \details{
 A random variable
@@ -68,6 +68,15 @@ useful in drawing from the general CMM distribution; see
 Morris, Raim, and Sellers (2020+).
 }
 \examples{
-stop("TBD")
+set.seed(1234)
+m = 10
+p = 0.7
+nu = 0.8
+
+x = r_cmb(100, m, p, nu)
+d_cmb(x[1], m, p, nu, take_log = TRUE)
+normconst_cmb(m, p, nu, take_log = TRUE)
+e_cmb(m, p, nu)
+v_cmb(m, p, nu)
 
 }

@@ -9,7 +9,7 @@
 \alias{v_cmm}
 \title{Conway Maxwell Multinomial distribution}
 \usage{
-d_cmm(x, m, p, nu, take_log = FALSE, normalize = TRUE)
+d_cmm(x, p, nu, take_log = FALSE, normalize = TRUE)
 
 normconst_cmm(m, p, nu, take_log = FALSE)
 
@@ -22,8 +22,6 @@ v_cmm(m, p, nu)
 \arguments{
 \item{x}{A eqn{k}-dimensional vector representing the outcome.}
 
-\item{m}{Number of trials in the CMB cluster.}
-
 \item{p}{Probability parameter; a vector of positive numbers which sums to 1.}
 
 \item{nu}{Dispersion parameter.}
@@ -33,6 +31,8 @@ the value on the log-scale.}
 
 \item{normalize}{\code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
 compute or apply the normalizing constant to each density value.}
+
+\item{m}{Number of trials in the CMB cluster.}
 
 \item{n}{Number of draws to produce.}
 
@@ -52,7 +52,8 @@ of the sampler.}
 \value{
 The values returned by each function are:
 \itemize{
-\item \code{d_cmm}: a number representing the CMM density \eqn{f(\bm{x} \mid m, \bm{p}, \nu)}.
+\item \code{d_cmm}: the CMM density \eqn{f(\bm{x} \mid m, \bm{p}, \nu)},
+where \eqn{m} is assumed to be \code{sum(x)}.
 \item \code{r_cmm}: an \eqn{n \times k} matrix of draws.
 \item \code{normconst_cmm}: a number representing the normalizing constant \eqn{C(m, \bm{p}, \nu)}.
 \item \code{e_cmm}: a \eqn{k}-dimensional vector representing \eqn{\textrm{E}(\bm{X})}.
@@ -63,7 +64,8 @@ The values returned by each function are:
 Functions for the \eqn{\textrm{CMM}_k(m, \bm{p}, \nu)} distribution.
 }
 \details{
-Let \eqn{\Omega_{m,k}} denote the multinomial sample space. A random variable
+Let \eqn{\Omega_{m,k}} denote the multinomial sample space based on \eqn{m} trials
+and \eqn{k} categories. A random variable
 \eqn{\bm{X} \sim \textrm{CMM}_k(m, \bm{p}, \nu)} has probability mass function
 \deqn{
 f(\bm{x} \mid m, \bm{p}, \nu) = C(m, \bm{p}, \nu)^{-1} {m \choose x_1 \cdots x_k}^\nu
@@ -82,6 +84,15 @@ over the sample space. A Gibbs sampler is used to draw samples from CMM. Further
 can be found in Morris, Raim, and Sellers (2020+).
 }
 \examples{
-stop("TBD")
+set.seed(1234)
+m = 10
+p = c(0.1,0.1,0.8)
+nu = 0.8
+
+x = r_cmm(100, m, p, nu, burn = 1000, thin = 10)
+d_cmm(x[1,], p, nu, take_log = TRUE)
+normconst_cmm(m, p, nu, take_log = TRUE)
+e_cmm(m, p, nu)
+v_cmm(m, p, nu)
 
 }

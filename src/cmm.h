@@ -12,8 +12,8 @@ arma::mat r_cmm_internal(unsigned int n, unsigned int m, const arma::vec& p,
 //' @name cmm
 //' @export
 // [[Rcpp::export]]
-double d_cmm(const arma::vec& x, unsigned int m, const arma::vec& p,
-	double nu, bool take_log = false, bool normalize = true);
+double d_cmm(const arma::vec& x, const arma::vec& p, double nu,
+	bool take_log = false, bool normalize = true);
 
 //' @name cmm
 //' @export
@@ -31,7 +31,6 @@ double normconst_cmm(unsigned int m, const arma::vec& p, double nu,
 //' 
 //' @param X An \eqn{n \times k} matrix of outcomes, where the \eqn{i}th row
 //' \eqn{\bm{x}_i^\top} represents the \eqn{i}th observation.
-//' @param m An \eqn{n}-dimensional vector \eqn{m_1, \ldots, m_n}
 //' @param P An \eqn{n \times k} matrix, where the \eqn{i}th row
 //' \eqn{\bm{p}_i^\top} represents the probability parameter for the
 //' \eqn{i}th observation.
@@ -50,17 +49,42 @@ double normconst_cmm(unsigned int m, const arma::vec& p, double nu,
 //' f(\bm{x}_n^\top \mid m_n, \bm{p}_n^\top, \nu_n),
 //' }
 //' which may be on the log-scale and/or unnormalized
-//' according to input arguments.
+//' according to input arguments. The value of each
+//' \eqn{m_i} is assumed to be \eqn{\sum_{j=1}^k x_{ij}}.
 //'
 //' @details
-//' The entire computation for this function is done in C++, and so may be
-//' more efficient than calling \code{d_cmm} in an loop from R.
+//' The entire computation for this function is done in C++, and therefore
+//' may be more efficient than calling \code{d_cmm} in a loop from R.
 //'
 //' @examples
-//' stop("TBD")
+//' set.seed(1234)
 //' 
+//' n = 20
+//' m = rep(10, n)
+//' k = 3
+//' 
+//' x = rnorm(n)
+//' X = model.matrix(~ x)
+//' beta = matrix(NA, 2, k-1)
+//' beta[1,] = -1
+//' beta[2,] = 1
+//' P = t(apply(X %*% beta, 1, inv_mlogit))
+//' 
+//' w = rnorm(n)
+//' W = model.matrix(~ x)
+//' gamma = c(1, -0.1)
+//' nu = X %*% gamma
+//' 
+//' y = matrix(NA, n, k)
+//' for (i in 1:n) {
+//'     y[i,] = r_cmm(1, m[i], P[i,], nu[i], burn = 200)
+//' }
+//' 
+//' d_cmm_sample(y, P, nu, take_log = TRUE)
+//' 
+//' @export
 // [[Rcpp::export]]
-arma::vec d_cmm_sample(const arma::mat& X, const arma::vec& m, const arma::mat& P,
+arma::vec d_cmm_sample(const arma::mat& X, const arma::mat& P,
 	const arma::vec& nu, bool take_log = false, bool normalize = true);
 
 #endif

@@ -4,7 +4,7 @@
 \alias{d_cmb_sample}
 \title{Density for CMB random sample}
 \usage{
-d_cmb_sample(x, m, p, nu)
+d_cmb_sample(x, m, p, nu, take_log = FALSE)
 }
 \arguments{
 \item{x}{An \eqn{n}-dimensional vector of outcomes}
@@ -37,6 +37,26 @@ X_i \sim \textrm{CMB}(m_i, p_i, \nu_i),
 }
 }
 \examples{
-stop("TBD")
+set.seed(1234)
+
+n = 20
+m = rep(10, n)
+
+x = rnorm(n)
+X = model.matrix(~ x)
+beta = c(-1, 1)
+p = plogis(X \%*\% beta)
+
+w = rnorm(n)
+W = model.matrix(~ w)
+gamma = c(0.1, -0.1)
+nu = X \%*\% gamma
+
+y = numeric(n)
+for (i in 1:n) {
+    y[i] = r_cmb(1, m[i], p[i], nu[i])
+}
+
+d_cmb_sample(y, m, p, nu, take_log = TRUE)
 
 }

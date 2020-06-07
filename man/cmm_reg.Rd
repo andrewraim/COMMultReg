@@ -8,7 +8,6 @@
 \alias{AIC.cmm_reg}
 \alias{coef.cmm_reg}
 \alias{vcov.cmm_reg}
-\alias{get_par_names}
 \alias{print.cmm_reg}
 \title{Conway Maxwell Multinomial Regression}
 \usage{
@@ -34,29 +33,45 @@ cmm_reg_control(base = 1, tol = 1e-08, verbose = FALSE, max_iter = 200)
 
 \method{vcov}{cmm_reg}(object, extended = FALSE, ...)
 
-get_par_names(object, extended = FALSE, ...)
-
 \method{print}{cmm_reg}(x, ...)
 }
 \arguments{
-\item{formula_x}{TBD}
+\item{formula_x}{Regression formula to determine \eqn{\bm{X}} design matrix.
+See details. The outcome must be specified here.}
 
-\item{formula_w}{TBD}
+\item{formula_w}{Regression formula to determine \eqn{\bm{W}} design matrix.}
 
-\item{control}{TBD}
+\item{data}{An optional \code{data.frame} with variables to be used with
+regression formulas. Variables not found here are read from the environment.}
 
-\item{y}{TBD}
+\item{beta_init}{A \eqn{p_x \times (k-1)} matrix whose columns correspond to
+\eqn{\bm{\beta_1}, \ldots, \bm{\beta_{k-1}}}. See details. If provided,
+will be used for the starting value in Newton-Raphson. If \code{NULL},
+a default value will be used.}
 
-\item{X}{TBD}
+\item{gamma_init}{A vector which serves the starting value for
+\eqn{\gamma}, if provided. Otherwise, if \code{NULL}, a default value
+will be used.}
 
-\item{W}{TBD}
+\item{control}{a list of control parameters; see details.}
 
-\item{extended}{TBD}
+\item{y}{An \eqn{n \times k} matrix of outcomes, where the \eqn{i}th row
+\eqn{\bm{x}_i^\top} represents the \eqn{i}th observation.}
 
-\item{par_init}{TBD}
+\item{X}{The \eqn{\bm{X}} design matrix; see details.}
+
+\item{W}{The \eqn{\bm{W}} design matrix; see details.}
+
+\item{object}{An object output from \code{cmm_reg} or \code{cmm_reg_raw}.}
+
+\item{extended}{boolean; if \code{FALSE}, drop terms associated with the
+extended parameters \eqn{\mu}. See details.}
+
+\item{x}{Used with the \code{print} function; same meaning as \code{object}
+argument.}
 }
 \value{
-
+An object of class \code{cmm_reg} containing the result.
 }
 \description{
 Functions for CMM Regression.
@@ -78,9 +93,92 @@ and identity link
 \nu_i = \bm{w}_i^\top \bm{\gamma}.
 }
 The first category is assumed to be the baseline by default, but this can be
-changed to category \code{a} by specifying the \code{base = a} argument.
+changed to category \code{b} by specifying the \code{base = b} argument.
+
+The function \code{cmm_reg} provides a formula interface, while
+\code{cmm_reg_raw} provides a "raw" interface where variables \code{y},
+\code{X}, and \code{W} can be provided directly.
+
+Fitting is carried out with a Newton-Raphson algorithm on the extended parameter
+\eqn{\bm{\vartheta} = (\bm{\mu}, \bm{\psi})}, where
+\eqn{\bm{\psi} = (\bm{\gamma}, \bm{\beta}_1, \ldots, \bm{\beta}_{k-1})} are
+the regression coefficients of interest and \eqn{\bm{\mu}}
+contains elements of the form \eqn{-\log C(\bm{p}, \nu; m) + m \log p_b} which are
+typically not of direct interest to the analyst. See Morris, Raim, and
+Sellers (2020+) for further details.
+
+Let \eqn{\bm{\vartheta}^{(g)}} denote the estimate from the \eqn{g}th iteration.
+The algorithm is considered to have converged when 
+\eqn{\sum_{j} |\vartheta_j^{(g)} - \vartheta_j^{(g-1)}| < \epsilon}
+is sufficiently small, or failed to converge when a maximum number of iterations
+has been reached. These values can be specified via the \code{control} argument.
+
+The \code{control} argument is a list which may provide any of the following:
+\itemize{
+\item \code{base} in an integer which specifies which category is considered
+the baseline. The default is 1.
+\item \code{tol} specifies the convergence tolerance \eqn{\epsilon}. The
+default is \code{1e-8}. 
+\item \code{verbose} is a boolean; if \code{TRUE}, print informative
+messages during fitting. Default is \code{FALSE}.
+\item \code{max_iter} specifies the maximum number of Newton-Raphson
+iterations. Default is \code{200}.
+}
+
+Several auxiliary functions are provided for convenience:
+\itemize{
+\item \code{cmm_reg_control} provides a convenient way to construct the
+\code{control} argument.
+\item \code{logLik} returns the log-likelihood at the solution
+\eqn{\hat{\bm{\psi}}}.
+\item \code{AIC} returns the Akaike information criterion at the solution.
+\item \code{coef} returns a list with elements \code{beta} and \code{gamma}
+at the solution \eqn{\hat{\bm{\psi}}}. If \code{extended = TRUE}, an element
+with \eqn{\mu} is also returned.
+\item \code{vcov} returns an estimate of the covariance matrix of
+\eqn{\hat{\bm{\psi}}} based on the information matrix. If
+\code{extended = TRUE}, elements corresponding to \eqn{\mu} are also
+included.
+\item \code{print} displays estimates and standard errors.
+}
 }
 \examples{
-print("TBD")
+# Generate data from CMM regression model
+set.seed(1234)
+
+n = 200
+m = rep(10, n)
+k = 3
+
+x = rnorm(n)
+X = model.matrix(~ x)
+beta = matrix(NA, 2, k-1)
+beta[1,] = -1
+beta[2,] = 1
+P = t(apply(X \%*\% beta, 1, inv_mlogit))
+
+w = rnorm(n)
+W = model.matrix(~ w)
+gamma = c(1, -0.1)
+nu = X \%*\% gamma
+
+y = matrix(NA, n, k)
+for (i in 1:n) {
+    y[i,] = r_cmm(1, m[i], P[i,], nu[i], burn = 200)
+}
+
+dat = data.frame(y1 = y[,1], y2 = y[,2], y3 = y[,3], x = x, w = w)
+
+# Fit CMM regression with formula interface
+cmm_out = cmm_reg(formula_x = y ~ x, formula_w = ~w, data = dat)
+print(cmm_out)
+logLik(cmm_out)
+AIC(cmm_out)
+coef(cmm_out)
+vcov(cmm_out)
+
+# Alteratively, use the "raw" interface
+cmm_raw_out = cmm_reg_raw(y, X, W)
+print(cmm_raw_out)
 
 }

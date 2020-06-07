@@ -47,12 +47,12 @@ double normconst_cmb(unsigned int m, double p, double nu, bool take_log)
 }
 
 arma::vec d_cmb_sample(const arma::vec& x, const arma::vec& m,
-	const arma::vec& p, const arma::vec& nu)
+	const arma::vec& p, const arma::vec& nu, bool take_log)
 {
 	unsigned int n = x.n_elem;
 	arma::vec out(n);
 	for (unsigned int i = 0; i < n; i++) {
-		out(i) = d_cmb(x(i), m(i), p(i), nu(i), true);
+		out(i) = d_cmb(x(i), m(i), p(i), nu(i), take_log);
 	}
 
 	return out;

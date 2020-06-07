@@ -2,16 +2,30 @@
 #' 
 #' Functions for CMM Regression.
 #' 
-#' @param formula_x TBD
-#' @param formula_w TBD
-#' @param y TBD
-#' @param X TBD
-#' @param W TBD
-#' @param extended TBD
-#' @param par_init TBD
-#' @param control TBD
+#' @param formula_x Regression formula to determine \eqn{\bm{X}} design matrix.
+#' See details. The outcome must be specified here.
+#' @param formula_w Regression formula to determine \eqn{\bm{W}} design matrix.
+#' @param data An optional \code{data.frame} with variables to be used with
+#' regression formulas. Variables not found here are read from the environment.
+#' @param object An object output from \code{cmm_reg} or \code{cmm_reg_raw}.
+#' @param x Used with the \code{print} function; same meaning as \code{object}
+#' argument.
+#' @param y An \eqn{n \times k} matrix of outcomes, where the \eqn{i}th row
+#' \eqn{\bm{x}_i^\top} represents the \eqn{i}th observation.
+#' @param X The \eqn{\bm{X}} design matrix; see details.
+#' @param W The \eqn{\bm{W}} design matrix; see details.
+#' @param extended boolean; if \code{FALSE}, drop terms associated with the
+#' extended parameters \eqn{\mu}. See details.
+#' @param beta_init A \eqn{p_x \times (k-1)} matrix whose columns correspond to
+#' \eqn{\bm{\beta_1}, \ldots, \bm{\beta_{k-1}}}. See details. If provided,
+#' will be used for the starting value in Newton-Raphson. If \code{NULL},
+#' a default value will be used.
+#' @param gamma_init A vector which serves the starting value for
+#' \eqn{\gamma}, if provided. Otherwise, if \code{NULL}, a default value
+#' will be used.
+#' @param control a list of control parameters; see details.
 #' 
-#' @return
+#' @return An object of class \code{cmm_reg} containing the result.
 #' 
 #' @details
 #' Fit the model
@@ -32,15 +46,21 @@
 #' The first category is assumed to be the baseline by default, but this can be
 #' changed to category \code{b} by specifying the \code{base = b} argument.
 #' 
+#' The function \code{cmm_reg} provides a formula interface, while
+#' \code{cmm_reg_raw} provides a "raw" interface where variables \code{y},
+#' \code{X}, and \code{W} can be provided directly.
+#' 
 #' Fitting is carried out with a Newton-Raphson algorithm on the extended parameter
-#' \eqn{\bm{\vartheta} = (\bm{\mu}, \bm{\gamma}, \bm{\beta})}, where \eqn{\bm{\mu}}
-#' contains elements of the form \eqn{-\log C(\bm{p}, \nu; m) + m \log p_b} which is
+#' \eqn{\bm{\vartheta} = (\bm{\mu}, \bm{\psi})}, where
+#' \eqn{\bm{\psi} = (\bm{\gamma}, \bm{\beta}_1, \ldots, \bm{\beta}_{k-1})} are
+#' the regression coefficients of interest and \eqn{\bm{\mu}}
+#' contains elements of the form \eqn{-\log C(\bm{p}, \nu; m) + m \log p_b} which are
 #' typically not of direct interest to the analyst. See Morris, Raim, and
 #' Sellers (2020+) for further details.
 #' 
 #' Let \eqn{\bm{\vartheta}^{(g)}} denote the estimate from the \eqn{g}th iteration.
 #' The algorithm is considered to have converged when 
-#' \eqn{\sum_{j=1}^q |\vartheta_j^{(g)} - \vartheta_j^{(g-1)}|}
+#' \eqn{\sum_{j} |\vartheta_j^{(g)} - \vartheta_j^{(g-1)}| < \epsilon}
 #' is sufficiently small, or failed to converge when a maximum number of iterations
 #' has been reached. These values can be specified via the \code{control} argument.
 #'
@@ -48,16 +68,69 @@
 #' \itemize{
 #' \item \code{base} in an integer which specifies which category is considered
 #' the baseline. The default is 1.
-#' \item \code{tol} specifies the convergence tolerance for the Newton-Raphson
-#' algorithm. The default is \code{1e-8}. 
+#' \item \code{tol} specifies the convergence tolerance \eqn{\epsilon}. The
+#' default is \code{1e-8}. 
 #' \item \code{verbose} is a boolean; if \code{TRUE}, print informative
 #' messages during fitting. Default is \code{FALSE}.
 #' \item \code{max_iter} specifies the maximum number of Newton-Raphson
-#' iterations to be carried out. Default is \code{200}.
+#' iterations. Default is \code{200}.
+#' }
+#' 
+#' Several auxiliary functions are provided for convenience:
+#' \itemize{
+#' \item \code{cmm_reg_control} provides a convenient way to construct the
+#' \code{control} argument.
+#' \item \code{logLik} returns the log-likelihood at the solution
+#' \eqn{\hat{\bm{\psi}}}.
+#' \item \code{AIC} returns the Akaike information criterion at the solution.
+#' \item \code{coef} returns a list with elements \code{beta} and \code{gamma}
+#' at the solution \eqn{\hat{\bm{\psi}}}. If \code{extended = TRUE}, an element
+#' with \eqn{\mu} is also returned.
+#' \item \code{vcov} returns an estimate of the covariance matrix of
+#' \eqn{\hat{\bm{\psi}}} based on the information matrix. If
+#' \code{extended = TRUE}, elements corresponding to \eqn{\mu} are also
+#' included.
+#' \item \code{print} displays estimates and standard errors.
 #' }
 #'
 #' @examples
-#' print("TBD")
+#' # Generate data from CMM regression model
+#' set.seed(1234)
+#' 
+#' n = 200
+#' m = rep(10, n)
+#' k = 3
+#' 
+#' x = rnorm(n)
+#' X = model.matrix(~ x)
+#' beta = matrix(NA, 2, k-1)
+#' beta[1,] = -1
+#' beta[2,] = 1
+#' P = t(apply(X %*% beta, 1, inv_mlogit))
+#' 
+#' w = rnorm(n)
+#' W = model.matrix(~ w)
+#' gamma = c(1, -0.1)
+#' nu = X %*% gamma
+#' 
+#' y = matrix(NA, n, k)
+#' for (i in 1:n) {
+#'     y[i,] = r_cmm(1, m[i], P[i,], nu[i], burn = 200)
+#' }
+#' 
+#' dat = data.frame(y1 = y[,1], y2 = y[,2], y3 = y[,3], x = x, w = w)
+#' 
+#' # Fit CMM regression with formula interface
+#' cmm_out = cmm_reg(formula_x = y ~ x, formula_w = ~w, data = dat)
+#' print(cmm_out)
+#' logLik(cmm_out)
+#' AIC(cmm_out)
+#' coef(cmm_out)
+#' vcov(cmm_out)
+#' 
+#' # Alteratively, use the "raw" interface
+#' cmm_raw_out = cmm_reg_raw(y, X, W)
+#' print(cmm_raw_out)
 #' 
 #' @name cmm_reg
 NULL
@@ -138,18 +211,18 @@ cmm_reg_raw = function(y, X, W, beta_init = NULL, gamma_init = NULL, control = N
 	out$W = W
 
 	# Make sure labels for results are set properly
-	out$xnames = colnames(X)
+	out$x_names = colnames(X)
 	colnames(out$par$beta) = sprintf("cat%d", (1:k)[-control$base])
-	if (is.null(out$xnames)) {
+	if (is.null(out$x_names)) {
 		rownames(out$par$beta) = sprintf("X%d", 1:p_x)
-	} else if (length(out$xnames) != p_x) {
-		warning("length of xnames does not match ncol(X)")
+	} else if (length(out$x_names) != p_x) {
+		warning("length of x_names does not match ncol(X)")
 	} else {
-		rownames(out$par$beta) = out$xnames
+		rownames(out$par$beta) = out$x_names
 	}
 
-	out$wnames = colnames(W)
-	names(out$par$gamma) = out$wnames
+	out$w_names = colnames(W)
+	names(out$par$gamma) = out$w_names
 
 	return(out)
 }
@@ -244,43 +317,22 @@ loglik_cmm_xform = function(par, dat_xform, base = 1)
 	qq = length(coefs)
 	ll = 0
 
-	if (TRUE) {
-		# Compute the loglik from the Poisson regression form.
-		# This should be much faster than computing the log-likelihood from scratch,
-		# since the normalizing constants are in the parameters.
-		for (l in 1:L) {
-			dat = dat_xform[[l]]
-			ee = numeric(L)
-			ee[l] = 1
-			n_l = sum(dat_xform[[l]]$freqs)
+	# Compute the loglik from the Poisson regression form.
+	# This should be much faster than computing the log-likelihood from scratch,
+	# since the normalizing constants are in the parameters.
+	for (l in 1:L) {
+		dat = dat_xform[[l]]
+		ee = numeric(L)
+		ee[l] = 1
+		n_l = sum(dat_xform[[l]]$freqs)
 
-			for (i in 1:nrow(dat$z_obs)) {
-				s = c(ee,
-					logchoose(dat$z_obs[i,]) * t(dat$w),
-					t(dat$z_obs[i,-base]) %x% t(dat$x)
-				)
-				scoefs = sum(s * coefs)
-				ll = ll + dat$freqs[i] * scoefs
-			}
-		}
-	} else {
-		# This part should no longer be needed. Remove it?
-		# At least we can use the collapsed form of the data to avoid extra walks
-		# through the multinomial sample space
-		for (l in 1:L) {
-			dat = dat_xform[[l]]
-			for (i in 1:nrow(dat$z_obs)) {
-				ll = ll + dat$freqs[i] * d_cmm(
-					x = dat$z_obs[i,],
-					m = dat$m,
-					p = t(dat$x) %*% inv_mlogit(par$beta),
-					nu = t(dat$w) %*% par$gamma,
-					take_log = TRUE, normalize = FALSE)
-			}
-			ll = ll - sum(dat$freqs) * d_cmm_normconst(m = dat$m,
-					p = t(dat$x) %*% inv_mlogit(par$beta),
-					nu = t(dat$w) %*% par$gamma,
-					take_log = TRUE)
+		for (i in 1:nrow(dat$z_obs)) {
+			s = c(ee,
+				logchoose(dat$z_obs[i,]) * t(dat$w),
+				t(dat$z_obs[i,-base]) %x% t(dat$x)
+			)
+			scoefs = sum(s * coefs)
+			ll = ll + dat$freqs[i] * scoefs
 		}
 	}
 
@@ -407,8 +459,6 @@ fitted.cmm_reg = function(object, newX, newW, ...)
 	return(dat)
 }
 
-#' @name cmm_reg
-#' @export
 get_par_names = function(object, extended = FALSE, ...)
 {
 	par = coef(object, extended = TRUE)
@@ -417,31 +467,31 @@ get_par_names = function(object, extended = FALSE, ...)
 	p_x = nrow(par$beta)
 	p_w = length(par$gamma)
 
-	xnames = object$xnames
+	x_names = object$x_names
 	cats = setdiff(1:k, object$base)
-	if (is.null(xnames)) {
+	if (is.null(x_names)) {
 		label_var = rep(1:p_x, times = k-1)
 		label_dim = rep(cats, each = p_x)
 		snames = sprintf("%d:beta%d", label_dim, label_var)
 	} else {
-		stopifnot(length(xnames) == nrow(par$beta))
-		label_var = rep(xnames, times = k-1)
+		stopifnot(length(x_names) == nrow(par$beta))
+		label_var = rep(x_names, times = k-1)
 		label_dim = rep(cats, each = p_x)
-		snames = sprintf("%d:%s", label_dim, xnames)
+		snames = sprintf("%d:%s", label_dim, x_names)
 	}
 
-	wnames = object$wnames
-	if (is.null(wnames)) {
-		wnames = sprintf("gamma%d", 1:length(par$gamma))
+	w_names = object$w_names
+	if (is.null(w_names)) {
+		w_names = sprintf("gamma%d", 1:length(par$gamma))
 	} else {
-		stopifnot(length(wnames) == length(par$gamma))
+		stopifnot(length(w_names) == length(par$gamma))
 	}
 
 	if (extended) {
-		munames = sprintf("mu%d", 1:L)
-		return(c(munames, wnames, snames))
+		mu_names = sprintf("mu%d", 1:L)
+		return(c(mu_names, w_names, snames))
 	} else {
-		return(c(wnames, snames))
+		return(c(w_names, snames))
 	}
 }
 
@@ -456,15 +506,14 @@ print.cmm_reg = function(x, ...)
 	V = vcov(x)
 	se = sqrt(diag(V))
 	zval = coefs / se
-	pval = 2 * (1 - pnorm(abs(zval)))
+	pval = 2 * pnorm(abs(zval), lower.tail = FALSE)
 
 	dat = data.frame(
-		estimate = coefs[idx],
+		estimate = coefs,
 		se = se,
 		zval = zval,
 		pval = pval
 	)
-
 	rownames(dat) = get_par_names(x)
 
 	printf("Fit for CMM model:\n")
