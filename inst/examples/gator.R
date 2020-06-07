@@ -6,9 +6,9 @@ data(Alligator)
 gator = dcast(Alligator, lake + sex + size ~ food, sum, value.var = "count")
 
 y = as.matrix(gator[,c("fish", "invert", "reptile", "bird", "other")])
-m = rowSums(y)
 k = ncol(y)
 n = nrow(y)
+m = rowSums(y)
 
 # ----- Try some model selection on W with CMM -----
 X = model.matrix(~ size + lake, data = gator)
@@ -27,27 +27,20 @@ W_levels = list(
 )
 aic_levels = numeric(length(W_levels))
 
-ctrl = cmm_poisreg_control(verbose = FALSE)
+ctrl = cmm_reg_control(verbose = FALSE, base = 1)
 for (l in 1:length(W_levels)) {
 	logger("Fitting model %d of %d\n", l, length(W_levels))
 	W = W_levels[[l]]
-	out_cmm = cmm_poisreg(y, m, X, W, base = 1, control = ctrl)
+	out_cmm = cmm_reg_raw(y, X, W, control = ctrl)
 	aic_levels[l] = AIC(out_cmm)
 }
 
 # ----- Look at best fitting model -----
 idx = which.min(aic_levels)
 W = W_levels[[idx]]
-X_names = c(
-	sprintf("invert:%s", colnames(X)),
-	sprintf("reptile:%s", colnames(X)),
-	sprintf("bird:%s", colnames(X)),
-	sprintf("other:%s", colnames(X))
-)
-W_names = sprintf("W:%s", colnames(W))
 
-ctrl = cmm_poisreg_control(verbose = FALSE)
-out_cmm = cmm_poisreg(y, m, X, W, base = 1,	control = ctrl)
+ctrl = cmm_reg_control(verbose = FALSE, base = 1)
+out_cmm = cmm_reg_raw(y, X, W, control = ctrl)
 print(out_cmm)
 
 # Get fitted values
@@ -66,3 +59,11 @@ cbind(y, round(ecmm_out,4))
 
 # GOF statistic
 sum((y - ecmm_out)^2 / ecmm_out)
+
+# ----- Try the formula interface -----
+ctrl = cmm_reg_control(verbose = TRUE, base = 1)
+out_cmm = cmm_reg(
+	formula_x = cbind(fish,invert,reptile,bird,other) ~ size + lake + sex, 
+	formula_w = ~ size, 
+	data = gator, control = ctrl)
+print(out_cmm)

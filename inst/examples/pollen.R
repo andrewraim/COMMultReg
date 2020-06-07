@@ -10,13 +10,15 @@ head(pollen)
 y = as.matrix(pollen)
 n = nrow(pollen)
 k = ncol(pollen)
-m = rowSums(y)
 X = matrix(1, n, 1)
 W = matrix(1, n, 1)
 
 # ----- Fit CMM distribution -----
-ctrl = cmm_reg_control(verbose = TRUE)
-out_cmm = cmm_reg(y = y, m = 100, X = X, W = W, base = 1, control = ctrl)
+ctrl = cmm_reg_control(verbose = TRUE, base = 1)
+out_cmm = cmm_reg(cbind(Pine,Fir,Oak,Alder) ~ 1, data = pollen, control = ctrl)
+
+# Alternatively, use the "raw" interface
+# out_raw_cmm = cmm_reg_raw(y = y, X = X, W = W, control = ctrl)
 
 # Print summary
 print(out_cmm)

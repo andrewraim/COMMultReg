@@ -2,6 +2,7 @@
 % Please edit documentation in R/cmm-reg.R
 \name{cmm_reg}
 \alias{cmm_reg}
+\alias{cmm_reg_raw}
 \alias{cmm_reg_control}
 \alias{logLik.cmm_reg}
 \alias{AIC.cmm_reg}
@@ -10,9 +11,19 @@
 \alias{print.cmm_reg}
 \title{Conway Maxwell Multinomial Regression}
 \usage{
-cmm_reg(y, m, X, W, base = 1, par_init = NULL, control = NULL)
+cmm_reg(
+  formula_x,
+  formula_w = ~1,
+  data = NULL,
+  beta_init = NULL,
+  gamma_init = NULL,
+  control = NULL,
+  ...
+)
 
-cmm_reg_control(tol = 1e-08, verbose = FALSE, max_iter = 200)
+cmm_reg_raw(y, X, W, par_init = NULL, control = NULL)
+
+cmm_reg_control(base = 1, tol = 1e-08, verbose = FALSE, max_iter = 200)
 
 \method{logLik}{cmm_reg}(object, ...)
 
@@ -25,19 +36,17 @@ cmm_reg_control(tol = 1e-08, verbose = FALSE, max_iter = 200)
 \method{print}{cmm_reg}(x, ...)
 }
 \arguments{
-\item{y}{TBD}
+\item{control}{TBD}
 
-\item{m}{TBD}
+\item{y}{TBD}
 
 \item{X}{TBD}
 
 \item{W}{TBD}
 
-\item{base}{TBD}
-
 \item{par_init}{TBD}
 
-\item{control}{TBD}
+\item{base}{TBD}
 }
 \value{
 
@@ -62,7 +71,7 @@ and identity link
 \nu_i = \bm{w}_i^\top \bm{\gamma}.
 }
 The first category is assumed to be the baseline by default, but this can be
-changed by specifying the \code{base} argument.
+changed to category \code{a} by specifying the \code{base = a} argument.
 }
 \examples{
 print("TBD")

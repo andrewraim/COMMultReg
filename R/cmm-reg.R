@@ -3,7 +3,6 @@
 #' Functions for CMM Regression.
 #' 
 #' @param y TBD
-#' @param m TBD
 #' @param X TBD
 #' @param W TBD
 #' @param base TBD
@@ -29,7 +28,7 @@
 #' \nu_i = \bm{w}_i^\top \bm{\gamma}.
 #' }
 #' The first category is assumed to be the baseline by default, but this can be
-#' changed by specifying the \code{base} argument.
+#' changed to category \code{a} by specifying the \code{base = a} argument.
 #'
 #' @examples
 #' print("TBD")
@@ -39,12 +38,51 @@ NULL
 
 #' @name cmm_reg
 #' @export
-cmm_reg = function(y, m, X, W, base = 1, par_init = NULL, control = NULL)
+cmm_reg = function(formula_x, formula_w = ~ 1, data = NULL,
+	beta_init = NULL, gamma_init = NULL, control = NULL, ...)
 {
-	dat_xform = transform_data(y, m, X, W)
+	# Parse formula_x. The response should be specified here.
+	mf = model.frame(formula_x, data, ...)
+	y = model.response(mf)
+	X = model.matrix(formula_x, mf)
+	p_x = ncol(X)
+
+	off_x = model.offset(mf)
+	if(!is.null(off_x)) {
+		stop("offset in formula is currently not supported")
+	}
+	weights = model.weights(mf)
+	if(!is.null(weights)) {
+		stop("weights argument is currently not supported")
+	}
+
+	# Parse formula_w
+	mf = model.frame(formula_w, data, ...)
+	W = model.matrix(formula_w, mf)
+	p_w = ncol(W)
+
+	off_w = model.offset(mf)
+	if(!is.null(off_w)) {
+		stop("offset in formula is currently not supported")
+	}
+
+	n = nrow(y)
+	k = ncol(k)
+
+	# TBD: Do something better with par_init
+	cmm_reg_raw(y, X, W, par_init = NULL, control = control)
+}
+
+#' @name cmm_reg
+#' @export
+cmm_reg_raw = function(y, X, W, par_init = NULL, control = NULL)
+{
+	m = rowSums(y)
 	k = ncol(y)
 	p_x = ncol(X)
 	p_w = ncol(W)
+
+	dat_xform = transform_data(y, m, X, W)
 	L = length(dat_xform)
 
 	if (is.null(par_init)) {
@@ -63,19 +101,19 @@ cmm_reg = function(y, m, X, W, base = 1, par_init = NULL, control = NULL)
 
 	out = newton_raphson(par_init = par_init, dat_xform = dat_xform,
 		max_iter = control$max_iter, verbose = control$verbose,
-		base = base, tol = control$tol,
+		base = control$base, tol = control$tol,
 		xnames = colnames(X), wnames = colnames(W))
 	out$loglik_poisson = out$loglik
-	out$base = base
-	out$loglik = loglik_cmm_xform(out$par, dat_xform, base = base)
+	out$base = control$base
+	out$loglik = loglik_cmm_xform(out$par, dat_xform, base = control$base)
 	return(out)
 }
 
 #' @name cmm_reg
 #' @export
-cmm_reg_control = function(tol = 1e-8, verbose = FALSE, max_iter = 200)
+cmm_reg_control = function(base = 1, tol = 1e-8, verbose = FALSE, max_iter = 200)
 {
-	list(tol = tol, verbose = verbose, max_iter = max_iter)
+	list(base = base, tol = tol, verbose = verbose, max_iter = max_iter)
 }
 
 check_par = function(par, dat_xform)
@@ -374,6 +412,7 @@ print.cmm_reg = function(x, ...)
 	printf("Iterations: %d   ", x$iter)
 	printf("Elapsed Sec: %0.4f   ", x$elapsed_sec)
 	printf("Tolerance: %g\n", x$tol)
+	printf("Baseline category: %d   ", x$base)
 	printf("LogLik: %0.4f   ", logLik(x))
 	printf("AIC: %0.4f\n", AIC(x))
 }
