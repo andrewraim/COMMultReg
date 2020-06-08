@@ -1,10 +1,10 @@
 Package: COMMultReg
 Type: Package
 Title: Conway-Maxwell Multinomial Regression
-Version: 0.0.1
+Version: 0.1.0
 Author: Andrew M. Raim, Darcy Steeg Morris
 Maintainer: Andrew M. Raim <andrew.raim@gmail.com>
-Description: Conway-Maxwell Multinomial. TBD: Mention our paper and MM package for Poissonreg method
+Description: Conway-Maxwell Multinomial (CMM) distribution and regression modeling <https://arxiv.org/abs/1911.02131>. CMM is an extension of multinomial which supports positive or negative association among trials in each observation.
 License: GPL (>= 2)
 Depends: Rcpp, combinat
 LinkingTo: Rcpp, RcppArmadillo

@@ -1,7 +1,3 @@
-# We needed some workarounds to get the package to work. See:
-# - https://stackoverflow.com/questions/36605955/c-function-not-available
-# - https://cran.r-project.org/web/packages/roxygen2/vignettes/namespace.html
-
 #' Conway-Maxwell-Multinomial Regression
 #' 
 #' @details
@@ -15,6 +11,11 @@
 #' of Rcpp and RcppArmadillo. Logic to iterate through the multinomial sample
 #' space, without pre-generating the elements, is from the function
 #' `gsl_multiset_next` in the GNU GSL library (Galassi et al).
+#' 
+#' Note that some of the functions in this package currently iterate through
+#' the multinomial sample space based on \eqn{m} trials and \eqn{k} categories.
+#' These functions are suitable for situations in which \eqn{{m+k-1 \choose m}
+#  is not very large for any particular observation.
 #' 
 #' @useDynLib COMMultReg, .registration = TRUE
 #' @importFrom Rcpp evalCpp
