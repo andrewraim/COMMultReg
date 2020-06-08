@@ -7,16 +7,7 @@
 Conway-Maxwell-Multinomial Regression
 }
 \details{
-This package provides basic drawing and density functions for the
-Conway-Maxwell-Multinomial (CMM) distribution, as well as functions to
-carry out maximum likelihood estimation (MLE) for a regression model
-based on CMM. The MLE method was inspired by Altham and Hankin (2012).
-Further details can be found in Morris, Raim, Sellers (2020+).
 
-Computationally intensive sections are carried out in C++ with the help
-of Rcpp and RcppArmadillo. Logic to iterate through the multinomial sample
-space, without pre-generating the elements, is from the function
-`gsl_multiset_next` in the GNU GSL library (Galassi et al).
 }
 \references{
 Pat M. E. Altham and Robin K. S. Hankin (2012). Multivariate generalizations
