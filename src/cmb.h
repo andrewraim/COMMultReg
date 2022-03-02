@@ -37,8 +37,6 @@ double normconst_cmb(unsigned int m, double p, double nu,
 //' \eqn{\nu_1, \ldots, \nu_n}
 //' @param take_log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
 //' value on the log-scale.
-//' @param normalize \code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
-//' compute or apply the normalizing constant to each density value.
 //' 
 //' @return
 //' A vector of density values

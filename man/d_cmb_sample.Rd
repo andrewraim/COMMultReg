@@ -19,9 +19,6 @@ d_cmb_sample(x, m, p, nu, take_log = FALSE)
 
 \item{take_log}{\code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
 value on the log-scale.}
-
-\item{normalize}{\code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
-compute or apply the normalizing constant to each density value.}
 }
 \value{
 A vector of density values

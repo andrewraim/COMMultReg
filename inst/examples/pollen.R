@@ -8,6 +8,7 @@ colnames(pollen) = c("Pine", "Fir", "Oak", "Alder")
 head(pollen)
 
 y = as.matrix(pollen)
+m = rowSums(y)
 n = nrow(pollen)
 k = ncol(pollen)
 X = matrix(1, n, 1)

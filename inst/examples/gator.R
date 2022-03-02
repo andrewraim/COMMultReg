@@ -67,8 +67,3 @@ out_cmm = cmm_reg(
 	formula_w = ~ size, 
 	data = gator, control = ctrl)
 print(out_cmm)
-
-par_hat = out_cmm$par
-data_xform = transform_data(out_cmm$y, out_cmm$X, out_cmm$W)
-extended_intercepts(data_xform, base = 1, par_hat$beta, par_hat$gamma)
-par_hat$mu

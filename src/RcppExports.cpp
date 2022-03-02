@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // r_cmb
 arma::vec r_cmb(unsigned int n, unsigned int m, double p, double nu);
 RcppExport SEXP _COMMultReg_r_cmb(SEXP nSEXP, SEXP mSEXP, SEXP pSEXP, SEXP nuSEXP) {

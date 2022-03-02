@@ -19,6 +19,8 @@
 #' 
 #' @useDynLib COMMultReg, .registration = TRUE
 #' @importFrom Rcpp evalCpp
+#' @importFrom stats AIC coef logLik model.frame model.matrix model.offset 
+#' model.response model.weights pnorm vcov
 #' @importFrom combinat xsimplex
 #' 
 #' @name COMMultReg-package

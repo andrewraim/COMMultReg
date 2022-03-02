@@ -3,7 +3,6 @@
 \name{cmm_reg}
 \alias{cmm_reg}
 \alias{cmm_reg_raw}
-\alias{cmm_reg_control}
 \alias{logLik.cmm_reg}
 \alias{AIC.cmm_reg}
 \alias{coef.cmm_reg}
@@ -22,8 +21,6 @@ cmm_reg(
 )
 
 cmm_reg_raw(y, X, W, beta_init = NULL, gamma_init = NULL, control = NULL)
-
-cmm_reg_control(base = 1, tol = 1e-08, verbose = FALSE, max_iter = 200)
 
 \method{logLik}{cmm_reg}(object, ...)
 
@@ -53,7 +50,9 @@ a default value will be used.}
 \eqn{\gamma}, if provided. Otherwise, if \code{NULL}, a default value
 will be used.}
 
-\item{control}{a list of control parameters; see details.}
+\item{control}{a list of control parameters; see \link{control}.}
+
+\item{...}{Additional optional arguments}
 
 \item{y}{An \eqn{n \times k} matrix of outcomes, where the \eqn{i}th row
 \eqn{\bm{x}_i^\top} represents the \eqn{i}th observation.}
@@ -63,6 +62,8 @@ will be used.}
 \item{W}{The \eqn{\bm{W}} design matrix; see details.}
 
 \item{object}{An object output from \code{cmm_reg} or \code{cmm_reg_raw}.}
+
+\item{k}{the penalty per parameter to use in AIC; default is 2.}
 
 \item{extended}{boolean; if \code{FALSE}, drop terms associated with the
 extended parameters \eqn{\mu}. See details.}
@@ -112,18 +113,6 @@ The algorithm is considered to have converged when
 \eqn{\sum_{j} |\vartheta_j^{(g)} - \vartheta_j^{(g-1)}| < \epsilon}
 is sufficiently small, or failed to converge when a maximum number of iterations
 has been reached. These values can be specified via the \code{control} argument.
-
-The \code{control} argument is a list which may provide any of the following:
-\itemize{
-\item \code{base} in an integer which specifies which category is considered
-the baseline. The default is 1.
-\item \code{tol} specifies the convergence tolerance \eqn{\epsilon}. The
-default is \code{1e-8}. 
-\item \code{verbose} is a boolean; if \code{TRUE}, print informative
-messages during fitting. Default is \code{FALSE}.
-\item \code{max_iter} specifies the maximum number of Newton-Raphson
-iterations. Default is \code{200}.
-}
 
 Several auxiliary functions are provided for convenience:
 \itemize{

@@ -65,7 +65,7 @@ server = shinyServer(function(input, output) {
 			for (j in 1:length(y)) {
 				if (x[i] + y[j] <= m) {
 					xval = t(c(x[i], y[j], m - x[i] - y[j]))
-					f_xy[i,j] = d_cmm(xval, m = m, p = p, nu = nu)
+					f_xy[i,j] = d_cmm(xval, p = p, nu = nu)
 				}
 			}
 		}

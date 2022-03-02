@@ -11,6 +11,6 @@ Description: Conway-Maxwell Multinomial (CMM) distribution and regression
 License: GPL (>= 2)
 Depends: Rcpp, combinat
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Encoding: UTF-8
 SystemRequirements: C++11

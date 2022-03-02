@@ -23,7 +23,9 @@
 #' @param gamma_init A vector which serves the starting value for
 #' \eqn{\gamma}, if provided. Otherwise, if \code{NULL}, a default value
 #' will be used.
-#' @param control a list of control parameters; see details.
+#' @param control a list of control parameters; see \link{control}.
+#' @param k the penalty per parameter to use in AIC; default is 2.
+#' @param ... Additional optional arguments
 #' 
 #' @return An object of class \code{cmm_reg} containing the result.
 #' 
@@ -64,18 +66,6 @@
 #' is sufficiently small, or failed to converge when a maximum number of iterations
 #' has been reached. These values can be specified via the \code{control} argument.
 #'
-#' The \code{control} argument is a list which may provide any of the following:
-#' \itemize{
-#' \item \code{base} in an integer which specifies which category is considered
-#' the baseline. The default is 1.
-#' \item \code{tol} specifies the convergence tolerance \eqn{\epsilon}. The
-#' default is \code{1e-8}. 
-#' \item \code{verbose} is a boolean; if \code{TRUE}, print informative
-#' messages during fitting. Default is \code{FALSE}.
-#' \item \code{max_iter} specifies the maximum number of Newton-Raphson
-#' iterations. Default is \code{200}.
-#' }
-#' 
 #' Several auxiliary functions are provided for convenience:
 #' \itemize{
 #' \item \code{cmm_reg_control} provides a convenient way to construct the
@@ -227,7 +217,19 @@ cmm_reg_raw = function(y, X, W, beta_init = NULL, gamma_init = NULL, control = N
 	return(out)
 }
 
-#' @name cmm_reg
+#' Conway Maxwell Multinomial Regression Control
+#' 
+#' An object with control arguments for CMM regression.
+#' 
+#' @param base in an integer which specifies which category is considered
+#' the baseline. The default is 1.
+#' @param tol specifies the convergence tolerance \eqn{\epsilon}. The
+#' default is \code{1e-8}. 
+#' @param verbose is a boolean; if \code{TRUE}, print informative
+#' messages during fitting. Default is \code{FALSE}.
+#' @param max_iter specifies the maximum number of Newton-Raphson
+#' iterations. Default is \code{200}.
+#'
 #' @export
 cmm_reg_control = function(base = 1, tol = 1e-8, verbose = FALSE, max_iter = 200)
 {
@@ -353,7 +355,7 @@ newton_raphson = function(par_init, dat_xform, base = 1, tol = 1e-6,
 	st = Sys.time()
 
 	if (verbose) {
-		out = loglik_score_fim_cmm(par_init, dat_xform, base = base)
+		out = loglik_score_fim_cmm(par_init, dat_xform, baseline = base)
 		logger("iter 0: Poisson loglik: %g\n", out$loglik)
 		print(coefs[-(1:L)])
 	}
@@ -363,7 +365,7 @@ newton_raphson = function(par_init, dat_xform, base = 1, tol = 1e-6,
 		coefs_old = coefs
 
 		par = vec2par(coefs, L, p_x, p_w, k)
-		out = loglik_score_fim_cmm(par, dat_xform, base = base)
+		out = loglik_score_fim_cmm(par, dat_xform, baseline = base)
 		move = tryCatch({
 			solve(out$fim, out$score)
 		}, error = function(e) {

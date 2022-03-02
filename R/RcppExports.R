@@ -35,8 +35,6 @@ normconst_cmb <- function(m, p, nu, take_log = FALSE) {
 #' \eqn{\nu_1, \ldots, \nu_n}
 #' @param take_log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
 #' value on the log-scale.
-#' @param normalize \code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
-#' compute or apply the normalizing constant to each density value.
 #' 
 #' @return
 #' A vector of density values
@@ -72,12 +70,10 @@ d_cmb_sample <- function(x, m, p, nu, take_log = FALSE) {
     .Call(`_COMMultReg_d_cmb_sample`, x, m, p, nu, take_log)
 }
 
-#' @export
 gunterize <- function(X, all = FALSE) {
     .Call(`_COMMultReg_gunterize`, X, all)
 }
 
-#' @export
 loglik_score_fim_cmm <- function(par, dat_xform, baseline) {
     .Call(`_COMMultReg_loglik_score_fim_cmm`, par, dat_xform, baseline)
 }
