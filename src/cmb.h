@@ -18,6 +18,17 @@ double d_cmb(unsigned int x, unsigned int m, double p,
 //' @name cmb
 //' @export
 // [[Rcpp::export]]
+double p_cmb(unsigned int x, unsigned int m, double p, double nu);
+
+
+//' @name cmb
+//' @export
+// [[Rcpp::export]]
+double q_cmb(unsigned int q, unsigned int m, double p, double nu);
+
+//' @name cmb
+//' @export
+// [[Rcpp::export]]
 double normconst_cmb(unsigned int m, double p, double nu,
 	bool take_log = false);
 

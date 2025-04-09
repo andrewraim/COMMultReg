@@ -41,6 +41,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// p_cmb
+double p_cmb(unsigned int x, unsigned int m, double p, double nu);
+RcppExport SEXP _COMMultReg_p_cmb(SEXP xSEXP, SEXP mSEXP, SEXP pSEXP, SEXP nuSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned int >::type x(xSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< double >::type p(pSEXP);
+    Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
+    rcpp_result_gen = Rcpp::wrap(p_cmb(x, m, p, nu));
+    return rcpp_result_gen;
+END_RCPP
+}
+// q_cmb
+double q_cmb(unsigned int q, unsigned int m, double p, double nu);
+RcppExport SEXP _COMMultReg_q_cmb(SEXP qSEXP, SEXP mSEXP, SEXP pSEXP, SEXP nuSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned int >::type q(qSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< double >::type p(pSEXP);
+    Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
+    rcpp_result_gen = Rcpp::wrap(q_cmb(q, m, p, nu));
+    return rcpp_result_gen;
+END_RCPP
+}
 // normconst_cmb
 double normconst_cmb(unsigned int m, double p, double nu, bool take_log);
 RcppExport SEXP _COMMultReg_normconst_cmb(SEXP mSEXP, SEXP pSEXP, SEXP nuSEXP, SEXP take_logSEXP) {
@@ -195,6 +223,8 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_COMMultReg_r_cmb", (DL_FUNC) &_COMMultReg_r_cmb, 4},
     {"_COMMultReg_d_cmb", (DL_FUNC) &_COMMultReg_d_cmb, 6},
+    {"_COMMultReg_p_cmb", (DL_FUNC) &_COMMultReg_p_cmb, 4},
+    {"_COMMultReg_q_cmb", (DL_FUNC) &_COMMultReg_q_cmb, 4},
     {"_COMMultReg_normconst_cmb", (DL_FUNC) &_COMMultReg_normconst_cmb, 4},
     {"_COMMultReg_d_cmb_sample", (DL_FUNC) &_COMMultReg_d_cmb_sample, 5},
     {"_COMMultReg_gunterize", (DL_FUNC) &_COMMultReg_gunterize, 2},

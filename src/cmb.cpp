@@ -39,6 +39,32 @@ double d_cmb(unsigned int x, unsigned int m, double p,
 	if (take_log) { return logfx; } else { return exp(logfx); }
 }
 
+double p_cmb(unsigned int x, unsigned int m, double p, double nu)
+{
+	double f_num = 0;
+	double f_denom = 0;
+
+	for (unsigned int i = 0; i < x+1; i++) {
+		double fx = exp(nu*lgamma(m+1) - nu*lgamma(i+1) - nu*lgamma(m-i+1) +
+			i*log(p) + (m-i)*log(1-p));
+		f_num += fx;
+		f_denom += fx;
+	}
+
+	for (unsigned int i = x+1; i < m+1; i++) {
+		double fx = exp(nu*lgamma(m+1) - nu*lgamma(i+1) - nu*lgamma(m-i+1) +
+			i*log(p) + (m-i)*log(1-p));
+		f_denom += fx;
+	}
+
+	return f_num / f_denom;
+}
+
+double q_cmb(unsigned int q, unsigned int m, double p, double nu)
+{
+	return -1;
+}
+
 double normconst_cmb(unsigned int m, double p, double nu, bool take_log)
 {
 	double log_f0 = d_cmb(0, m, p,nu, true, true);

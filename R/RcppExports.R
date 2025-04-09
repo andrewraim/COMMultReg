@@ -15,6 +15,18 @@ d_cmb <- function(x, m, p, nu, take_log = FALSE, normalize = TRUE) {
 
 #' @name cmb
 #' @export
+p_cmb <- function(x, m, p, nu) {
+    .Call(`_COMMultReg_p_cmb`, x, m, p, nu)
+}
+
+#' @name cmb
+#' @export
+q_cmb <- function(q, m, p, nu) {
+    .Call(`_COMMultReg_q_cmb`, q, m, p, nu)
+}
+
+#' @name cmb
+#' @export
 normconst_cmb <- function(m, p, nu, take_log = FALSE) {
     .Call(`_COMMultReg_normconst_cmb`, m, p, nu, take_log)
 }

@@ -4,6 +4,8 @@
 \alias{cmb}
 \alias{r_cmb}
 \alias{d_cmb}
+\alias{p_cmb}
+\alias{q_cmb}
 \alias{normconst_cmb}
 \alias{e_cmb}
 \alias{v_cmb}
@@ -12,6 +14,10 @@
 r_cmb(n, m, p, nu)
 
 d_cmb(x, m, p, nu, take_log = FALSE, normalize = TRUE)
+
+p_cmb(x, m, p, nu)
+
+q_cmb(q, m, p, nu)
 
 normconst_cmb(m, p, nu, take_log = FALSE)
 
