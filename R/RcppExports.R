@@ -9,8 +9,8 @@ r_cmb <- function(n, m, p, nu) {
 
 #' @name cmb
 #' @export
-d_cmb <- function(x, m, p, nu, take_log = FALSE, normalize = TRUE) {
-    .Call(`_COMMultReg_d_cmb`, x, m, p, nu, take_log, normalize)
+d_cmb <- function(x, m, p, nu, log = FALSE, normalize = TRUE) {
+    .Call(`_COMMultReg_d_cmb`, x, m, p, nu, log, normalize)
 }
 
 #' @name cmb
@@ -27,8 +27,8 @@ q_cmb <- function(q, m, p, nu) {
 
 #' @name cmb
 #' @export
-normconst_cmb <- function(m, p, nu, take_log = FALSE) {
-    .Call(`_COMMultReg_normconst_cmb`, m, p, nu, take_log)
+normconst_cmb <- function(m, p, nu, log = FALSE) {
+    .Call(`_COMMultReg_normconst_cmb`, m, p, nu, log)
 }
 
 #' Density for CMB random sample
@@ -45,7 +45,7 @@ normconst_cmb <- function(m, p, nu, take_log = FALSE) {
 #' \eqn{p_1, \ldots, p_n}
 #' @param nu An \eqn{n}-dimensional vector of dispersion parameters
 #' \eqn{\nu_1, \ldots, \nu_n}
-#' @param take_log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
+#' @param log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
 #' value on the log-scale.
 #' 
 #' @return
@@ -75,11 +75,11 @@ normconst_cmb <- function(m, p, nu, take_log = FALSE) {
 #'     y[i] = r_cmb(1, m[i], p[i], nu[i])
 #' }
 #' 
-#' d_cmb_sample(y, m, p, nu, take_log = TRUE)
+#' d_cmb_sample(y, m, p, nu, log = TRUE)
 #' 
 #' @export
-d_cmb_sample <- function(x, m, p, nu, take_log = FALSE) {
-    .Call(`_COMMultReg_d_cmb_sample`, x, m, p, nu, take_log)
+d_cmb_sample <- function(x, m, p, nu, log = FALSE) {
+    .Call(`_COMMultReg_d_cmb_sample`, x, m, p, nu, log)
 }
 
 gunterize <- function(X, all = FALSE) {
@@ -90,20 +90,20 @@ loglik_score_fim_cmm <- function(par, dat_xform, baseline) {
     .Call(`_COMMultReg_loglik_score_fim_cmm`, par, dat_xform, baseline)
 }
 
-r_cmm_internal <- function(n, m, p, nu, burn, thin, x_init, report_period) {
-    .Call(`_COMMultReg_r_cmm_internal`, n, m, p, nu, burn, thin, x_init, report_period)
+r_cmm_internal <- function(n, m, p, nu, burn, thin, x_init, report) {
+    .Call(`_COMMultReg_r_cmm_internal`, n, m, p, nu, burn, thin, x_init, report)
 }
 
 #' @name cmm
 #' @export
-d_cmm <- function(x, p, nu, take_log = FALSE, normalize = TRUE) {
-    .Call(`_COMMultReg_d_cmm`, x, p, nu, take_log, normalize)
+d_cmm <- function(x, p, nu, log = FALSE, normalize = TRUE) {
+    .Call(`_COMMultReg_d_cmm`, x, p, nu, log, normalize)
 }
 
 #' @name cmm
 #' @export
-normconst_cmm <- function(m, p, nu, take_log = FALSE) {
-    .Call(`_COMMultReg_normconst_cmm`, m, p, nu, take_log)
+normconst_cmm <- function(m, p, nu, log = FALSE) {
+    .Call(`_COMMultReg_normconst_cmm`, m, p, nu, log)
 }
 
 #' Density for CMM random sample
@@ -121,7 +121,7 @@ normconst_cmm <- function(m, p, nu, take_log = FALSE) {
 #' \eqn{i}th observation.
 #' @param nu An \eqn{n}-dimensional vector of dispersion parameters
 #' \eqn{\nu_1, \ldots, \nu_n}
-#' @param take_log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
+#' @param log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
 #' value on the log-scale.
 #' @param normalize \code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
 #' compute or apply the normalizing constant to each density value.
@@ -165,11 +165,11 @@ normconst_cmm <- function(m, p, nu, take_log = FALSE) {
 #'     y[i,] = r_cmm(1, m[i], P[i,], nu[i], burn = 200)
 #' }
 #' 
-#' d_cmm_sample(y, P, nu, take_log = TRUE)
+#' d_cmm_sample(y, P, nu, log = TRUE)
 #' 
 #' @export
-d_cmm_sample <- function(X, P, nu, take_log = FALSE, normalize = TRUE) {
-    .Call(`_COMMultReg_d_cmm_sample`, X, P, nu, take_log, normalize)
+d_cmm_sample <- function(X, P, nu, log = FALSE, normalize = TRUE) {
+    .Call(`_COMMultReg_d_cmm_sample`, X, P, nu, log, normalize)
 }
 
 pinv <- function(x) {

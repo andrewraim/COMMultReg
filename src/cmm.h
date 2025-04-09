@@ -6,20 +6,20 @@
 
 // [[Rcpp::export]]
 arma::mat r_cmm_internal(unsigned int n, unsigned int m, const arma::vec& p,
-	double nu, unsigned int burn, unsigned int thin,
-	const arma::vec& x_init, unsigned int report_period);
+	double nu, unsigned int burn, unsigned int thin, const arma::vec& x_init,
+	unsigned int report);
 
 //' @name cmm
 //' @export
 // [[Rcpp::export]]
 double d_cmm(const arma::vec& x, const arma::vec& p, double nu,
-	bool take_log = false, bool normalize = true);
+	bool log = false, bool normalize = true);
 
 //' @name cmm
 //' @export
 // [[Rcpp::export]]
 double normconst_cmm(unsigned int m, const arma::vec& p, double nu,
-	bool take_log = false);
+	bool log = false);
 
 //' Density for CMM random sample
 //' 
@@ -36,7 +36,7 @@ double normconst_cmm(unsigned int m, const arma::vec& p, double nu,
 //' \eqn{i}th observation.
 //' @param nu An \eqn{n}-dimensional vector of dispersion parameters
 //' \eqn{\nu_1, \ldots, \nu_n}
-//' @param take_log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
+//' @param log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
 //' value on the log-scale.
 //' @param normalize \code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
 //' compute or apply the normalizing constant to each density value.
@@ -80,12 +80,12 @@ double normconst_cmm(unsigned int m, const arma::vec& p, double nu,
 //'     y[i,] = r_cmm(1, m[i], P[i,], nu[i], burn = 200)
 //' }
 //' 
-//' d_cmm_sample(y, P, nu, take_log = TRUE)
+//' d_cmm_sample(y, P, nu, log = TRUE)
 //' 
 //' @export
 // [[Rcpp::export]]
 arma::vec d_cmm_sample(const arma::mat& X, const arma::mat& P,
-	const arma::vec& nu, bool take_log = false, bool normalize = true);
+	const arma::vec& nu, bool log = false, bool normalize = true);
 
 #endif
 

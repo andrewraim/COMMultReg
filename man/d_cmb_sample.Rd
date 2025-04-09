@@ -4,7 +4,7 @@
 \alias{d_cmb_sample}
 \title{Density for CMB random sample}
 \usage{
-d_cmb_sample(x, m, p, nu, take_log = FALSE)
+d_cmb_sample(x, m, p, nu, log = FALSE)
 }
 \arguments{
 \item{x}{An \eqn{n}-dimensional vector of outcomes}
@@ -17,7 +17,7 @@ d_cmb_sample(x, m, p, nu, take_log = FALSE)
 \item{nu}{An \eqn{n}-dimensional vector of dispersion parameters
 \eqn{\nu_1, \ldots, \nu_n}}
 
-\item{take_log}{\code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
+\item{log}{\code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
 value on the log-scale.}
 }
 \value{
@@ -54,6 +54,6 @@ for (i in 1:n) {
     y[i] = r_cmb(1, m[i], p[i], nu[i])
 }
 
-d_cmb_sample(y, m, p, nu, take_log = TRUE)
+d_cmb_sample(y, m, p, nu, log = TRUE)
 
 }

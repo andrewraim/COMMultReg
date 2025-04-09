@@ -4,7 +4,7 @@
 \alias{d_cmm_sample}
 \title{Density for CMM random sample}
 \usage{
-d_cmm_sample(X, P, nu, take_log = FALSE, normalize = TRUE)
+d_cmm_sample(X, P, nu, log = FALSE, normalize = TRUE)
 }
 \arguments{
 \item{X}{An \eqn{n \times k} matrix of outcomes, where the \eqn{i}th row
@@ -17,7 +17,7 @@ d_cmm_sample(X, P, nu, take_log = FALSE, normalize = TRUE)
 \item{nu}{An \eqn{n}-dimensional vector of dispersion parameters
 \eqn{\nu_1, \ldots, \nu_n}}
 
-\item{take_log}{\code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
+\item{log}{\code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
 value on the log-scale.}
 
 \item{normalize}{\code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
@@ -69,6 +69,6 @@ for (i in 1:n) {
     y[i,] = r_cmm(1, m[i], P[i,], nu[i], burn = 200)
 }
 
-d_cmm_sample(y, P, nu, take_log = TRUE)
+d_cmm_sample(y, P, nu, log = TRUE)
 
 }

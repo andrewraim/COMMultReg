@@ -24,19 +24,19 @@ arma::vec r_cmb(unsigned int n, unsigned int m, double p, double nu)
 }
 
 double d_cmb(unsigned int x, unsigned int m, double p,
-	double nu, bool take_log, bool normalize)
+	double nu, bool log, bool normalize)
 {
 	double logfx = nu*lgamma(m+1) - nu*lgamma(x+1) - nu*lgamma(m-x+1) +
-		x*log(p) + (m-x)*log(1-p);
+		x*std::log(p) + (m-x)*std::log(1-p);
 
 	if (normalize) {
 		arma::vec z = arma::linspace<arma::vec>(0.0, m, m+1);
 		arma::vec fz = exp(nu*lgamma(m+1) - nu*lgamma(z+1) - nu*lgamma(m-z+1) +
-			z*log(p) + (m-z)*log(1-p));
-		logfx -= log(sum(fz));
+			z*std::log(p) + (m-z)*std::log(1-p));
+		logfx -= std::log(sum(fz));
 	}
 
-	if (take_log) { return logfx; } else { return exp(logfx); }
+	return log ? logfx : exp(logfx);
 }
 
 double p_cmb(unsigned int x, unsigned int m, double p, double nu)
@@ -62,23 +62,24 @@ double p_cmb(unsigned int x, unsigned int m, double p, double nu)
 
 double q_cmb(unsigned int q, unsigned int m, double p, double nu)
 {
+	Rcpp::stop("This needs to be implemented");
 	return -1;
 }
 
-double normconst_cmb(unsigned int m, double p, double nu, bool take_log)
+double normconst_cmb(unsigned int m, double p, double nu, bool log)
 {
 	double log_f0 = d_cmb(0, m, p,nu, true, true);
-	double logC = -log_f0 + m*log(1-p);
-	if (take_log) { return logC; } else { return exp(logC); }
+	double out = -log_f0 + m*std::log(1-p);
+	return log ? out : exp(out);
 }
 
 arma::vec d_cmb_sample(const arma::vec& x, const arma::vec& m,
-	const arma::vec& p, const arma::vec& nu, bool take_log)
+	const arma::vec& p, const arma::vec& nu, bool log)
 {
 	unsigned int n = x.n_elem;
 	arma::vec out(n);
 	for (unsigned int i = 0; i < n; i++) {
-		out(i) = d_cmb(x(i), m(i), p(i), nu(i), take_log);
+		out(i) = d_cmb(x(i), m(i), p(i), nu(i), log);
 	}
 
 	return out;

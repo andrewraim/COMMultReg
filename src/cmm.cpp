@@ -7,8 +7,8 @@
  * sample from CMM using a Gibbs sampler.
  */
 arma::mat r_cmm_internal(unsigned int n, unsigned int m, const arma::vec& p,
-	double nu, unsigned int burn, unsigned int thin,
-	const arma::vec& x_init, unsigned int report_period)
+	double nu, unsigned int burn, unsigned int thin, const arma::vec& x_init,
+	unsigned int report)
 {
 	if (!arma::all(p > 0)) {
 		Rcpp::stop("All coordinates of p must be positive");
@@ -23,7 +23,7 @@ arma::mat r_cmm_internal(unsigned int n, unsigned int m, const arma::vec& p,
 	unsigned int idx_keep = 0;
 
 	for (unsigned int r = 0; r < R; r++) {
-		if ((r+1) % report_period == 0) {
+		if ((r+1) % report == 0) {
 			Rprintf("Entering step %d of the MCMC\n", r+1);
 		}
 
@@ -49,7 +49,7 @@ arma::mat r_cmm_internal(unsigned int n, unsigned int m, const arma::vec& p,
 	return x_hist;
 }
 
-double d_cmm(const arma::vec& x, const arma::vec& p, double nu, bool take_log,
+double d_cmm(const arma::vec& x, const arma::vec& p, double nu, bool log,
 	bool normalize)
 {
 	size_t k = x.n_elem;
@@ -58,7 +58,7 @@ double d_cmm(const arma::vec& x, const arma::vec& p, double nu, bool take_log,
 	}
 
 	size_t m = arma::sum(x);
-	double ll = nu*lgamma(m+1) - nu*sum(lgamma(x+1)) + arma::dot(x, log(p));
+	double ll = nu*lgamma(m+1) - nu*sum(lgamma(x+1)) + arma::dot(x, arma::log(p));
 
 	// Don't store the entire multinomial sample space; iterate through it.
 	// Skip this if we don't need the probabilties to be normalized (e.g. if
@@ -69,26 +69,26 @@ double d_cmm(const arma::vec& x, const arma::vec& p, double nu, bool take_log,
 		for (; !itr.is_end(); itr.increment()) {
 			// Note: tried this with ivec, but got different (wrong) answers
 			const arma::vec& xx = itr.getCounts();
-			sumprob += exp(nu*lgamma(m+1) - nu*sum(lgamma(xx+1)) + arma::dot(xx, log(p)));
+			sumprob += exp(nu*lgamma(m+1) - nu*sum(lgamma(xx+1)) + arma::dot(xx, arma::log(p)));
 		}
-		ll -= log(sumprob);
+		ll -= std::log(sumprob);
 	}
 
-	if (take_log) { return ll; } else { return exp(ll); }
+	return log ? ll : exp(ll);
 }
 
-double normconst_cmm(unsigned int m, const arma::vec& p, double nu, bool take_log)
+double normconst_cmm(unsigned int m, const arma::vec& p, double nu, bool log)
 {
 	size_t k = p.n_elem;
 	arma::vec x = arma::zeros(k);
 	x(0) = m;
-	double ll = d_cmm(x, p, nu, true, false) - d_cmm(x, p, nu, true, true);
-	if (take_log) { return ll; } else { return exp(ll); }
+	double out = d_cmm(x, p, nu, true, false) - d_cmm(x, p, nu, true, true);
+	return log ? out : exp(out);
 }
 
 // A special vectorized version of the density that we use elsewhere in the package
 arma::vec d_cmm_sample(const arma::mat& X, const arma::mat& P,
-	const arma::vec& nu, bool take_log, bool normalize)
+	const arma::vec& nu, bool log, bool normalize)
 {
 	unsigned int n = X.n_rows;
 	unsigned int k = X.n_cols;
@@ -98,7 +98,7 @@ arma::vec d_cmm_sample(const arma::mat& X, const arma::mat& P,
 
 	arma::vec out(n);
 	for (size_t i = 0; i < n; i++) {
-		out(i) = d_cmm(X.row(i).t(), P.row(i).t(), nu(i), take_log, normalize);
+		out(i) = d_cmm(X.row(i).t(), P.row(i).t(), nu(i), log, normalize);
 	}
 
 	return out;

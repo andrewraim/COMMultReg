@@ -26,8 +26,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // d_cmb
-double d_cmb(unsigned int x, unsigned int m, double p, double nu, bool take_log, bool normalize);
-RcppExport SEXP _COMMultReg_d_cmb(SEXP xSEXP, SEXP mSEXP, SEXP pSEXP, SEXP nuSEXP, SEXP take_logSEXP, SEXP normalizeSEXP) {
+double d_cmb(unsigned int x, unsigned int m, double p, double nu, bool log, bool normalize);
+RcppExport SEXP _COMMultReg_d_cmb(SEXP xSEXP, SEXP mSEXP, SEXP pSEXP, SEXP nuSEXP, SEXP logSEXP, SEXP normalizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -35,9 +35,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned int >::type m(mSEXP);
     Rcpp::traits::input_parameter< double >::type p(pSEXP);
     Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
-    Rcpp::traits::input_parameter< bool >::type take_log(take_logSEXP);
+    Rcpp::traits::input_parameter< bool >::type log(logSEXP);
     Rcpp::traits::input_parameter< bool >::type normalize(normalizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(d_cmb(x, m, p, nu, take_log, normalize));
+    rcpp_result_gen = Rcpp::wrap(d_cmb(x, m, p, nu, log, normalize));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -70,22 +70,22 @@ BEGIN_RCPP
 END_RCPP
 }
 // normconst_cmb
-double normconst_cmb(unsigned int m, double p, double nu, bool take_log);
-RcppExport SEXP _COMMultReg_normconst_cmb(SEXP mSEXP, SEXP pSEXP, SEXP nuSEXP, SEXP take_logSEXP) {
+double normconst_cmb(unsigned int m, double p, double nu, bool log);
+RcppExport SEXP _COMMultReg_normconst_cmb(SEXP mSEXP, SEXP pSEXP, SEXP nuSEXP, SEXP logSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< unsigned int >::type m(mSEXP);
     Rcpp::traits::input_parameter< double >::type p(pSEXP);
     Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
-    Rcpp::traits::input_parameter< bool >::type take_log(take_logSEXP);
-    rcpp_result_gen = Rcpp::wrap(normconst_cmb(m, p, nu, take_log));
+    Rcpp::traits::input_parameter< bool >::type log(logSEXP);
+    rcpp_result_gen = Rcpp::wrap(normconst_cmb(m, p, nu, log));
     return rcpp_result_gen;
 END_RCPP
 }
 // d_cmb_sample
-arma::vec d_cmb_sample(const arma::vec& x, const arma::vec& m, const arma::vec& p, const arma::vec& nu, bool take_log);
-RcppExport SEXP _COMMultReg_d_cmb_sample(SEXP xSEXP, SEXP mSEXP, SEXP pSEXP, SEXP nuSEXP, SEXP take_logSEXP) {
+arma::vec d_cmb_sample(const arma::vec& x, const arma::vec& m, const arma::vec& p, const arma::vec& nu, bool log);
+RcppExport SEXP _COMMultReg_d_cmb_sample(SEXP xSEXP, SEXP mSEXP, SEXP pSEXP, SEXP nuSEXP, SEXP logSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -93,8 +93,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type m(mSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type p(pSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type nu(nuSEXP);
-    Rcpp::traits::input_parameter< bool >::type take_log(take_logSEXP);
-    rcpp_result_gen = Rcpp::wrap(d_cmb_sample(x, m, p, nu, take_log));
+    Rcpp::traits::input_parameter< bool >::type log(logSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_cmb_sample(x, m, p, nu, log));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -124,8 +124,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // r_cmm_internal
-arma::mat r_cmm_internal(unsigned int n, unsigned int m, const arma::vec& p, double nu, unsigned int burn, unsigned int thin, const arma::vec& x_init, unsigned int report_period);
-RcppExport SEXP _COMMultReg_r_cmm_internal(SEXP nSEXP, SEXP mSEXP, SEXP pSEXP, SEXP nuSEXP, SEXP burnSEXP, SEXP thinSEXP, SEXP x_initSEXP, SEXP report_periodSEXP) {
+arma::mat r_cmm_internal(unsigned int n, unsigned int m, const arma::vec& p, double nu, unsigned int burn, unsigned int thin, const arma::vec& x_init, unsigned int report);
+RcppExport SEXP _COMMultReg_r_cmm_internal(SEXP nSEXP, SEXP mSEXP, SEXP pSEXP, SEXP nuSEXP, SEXP burnSEXP, SEXP thinSEXP, SEXP x_initSEXP, SEXP reportSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -136,52 +136,52 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned int >::type burn(burnSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type thin(thinSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type x_init(x_initSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type report_period(report_periodSEXP);
-    rcpp_result_gen = Rcpp::wrap(r_cmm_internal(n, m, p, nu, burn, thin, x_init, report_period));
+    Rcpp::traits::input_parameter< unsigned int >::type report(reportSEXP);
+    rcpp_result_gen = Rcpp::wrap(r_cmm_internal(n, m, p, nu, burn, thin, x_init, report));
     return rcpp_result_gen;
 END_RCPP
 }
 // d_cmm
-double d_cmm(const arma::vec& x, const arma::vec& p, double nu, bool take_log, bool normalize);
-RcppExport SEXP _COMMultReg_d_cmm(SEXP xSEXP, SEXP pSEXP, SEXP nuSEXP, SEXP take_logSEXP, SEXP normalizeSEXP) {
+double d_cmm(const arma::vec& x, const arma::vec& p, double nu, bool log, bool normalize);
+RcppExport SEXP _COMMultReg_d_cmm(SEXP xSEXP, SEXP pSEXP, SEXP nuSEXP, SEXP logSEXP, SEXP normalizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type p(pSEXP);
     Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
-    Rcpp::traits::input_parameter< bool >::type take_log(take_logSEXP);
+    Rcpp::traits::input_parameter< bool >::type log(logSEXP);
     Rcpp::traits::input_parameter< bool >::type normalize(normalizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(d_cmm(x, p, nu, take_log, normalize));
+    rcpp_result_gen = Rcpp::wrap(d_cmm(x, p, nu, log, normalize));
     return rcpp_result_gen;
 END_RCPP
 }
 // normconst_cmm
-double normconst_cmm(unsigned int m, const arma::vec& p, double nu, bool take_log);
-RcppExport SEXP _COMMultReg_normconst_cmm(SEXP mSEXP, SEXP pSEXP, SEXP nuSEXP, SEXP take_logSEXP) {
+double normconst_cmm(unsigned int m, const arma::vec& p, double nu, bool log);
+RcppExport SEXP _COMMultReg_normconst_cmm(SEXP mSEXP, SEXP pSEXP, SEXP nuSEXP, SEXP logSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< unsigned int >::type m(mSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type p(pSEXP);
     Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
-    Rcpp::traits::input_parameter< bool >::type take_log(take_logSEXP);
-    rcpp_result_gen = Rcpp::wrap(normconst_cmm(m, p, nu, take_log));
+    Rcpp::traits::input_parameter< bool >::type log(logSEXP);
+    rcpp_result_gen = Rcpp::wrap(normconst_cmm(m, p, nu, log));
     return rcpp_result_gen;
 END_RCPP
 }
 // d_cmm_sample
-arma::vec d_cmm_sample(const arma::mat& X, const arma::mat& P, const arma::vec& nu, bool take_log, bool normalize);
-RcppExport SEXP _COMMultReg_d_cmm_sample(SEXP XSEXP, SEXP PSEXP, SEXP nuSEXP, SEXP take_logSEXP, SEXP normalizeSEXP) {
+arma::vec d_cmm_sample(const arma::mat& X, const arma::mat& P, const arma::vec& nu, bool log, bool normalize);
+RcppExport SEXP _COMMultReg_d_cmm_sample(SEXP XSEXP, SEXP PSEXP, SEXP nuSEXP, SEXP logSEXP, SEXP normalizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type P(PSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type nu(nuSEXP);
-    Rcpp::traits::input_parameter< bool >::type take_log(take_logSEXP);
+    Rcpp::traits::input_parameter< bool >::type log(logSEXP);
     Rcpp::traits::input_parameter< bool >::type normalize(normalizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(d_cmm_sample(X, P, nu, take_log, normalize));
+    rcpp_result_gen = Rcpp::wrap(d_cmm_sample(X, P, nu, log, normalize));
     return rcpp_result_gen;
 END_RCPP
 }

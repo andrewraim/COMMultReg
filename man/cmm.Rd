@@ -9,9 +9,9 @@
 \alias{v_cmm}
 \title{Conway Maxwell Multinomial distribution}
 \usage{
-d_cmm(x, p, nu, take_log = FALSE, normalize = TRUE)
+d_cmm(x, p, nu, log = FALSE, normalize = TRUE)
 
-normconst_cmm(m, p, nu, take_log = FALSE)
+normconst_cmm(m, p, nu, log = FALSE)
 
 r_cmm(n, m, p, nu, burn = 0, thin = 1, x_init = NULL, report_period = NULL)
 
@@ -25,9 +25,6 @@ v_cmm(m, p, nu)
 \item{p}{Probability parameter; a vector of positive numbers which sums to 1.}
 
 \item{nu}{Dispersion parameter.}
-
-\item{take_log}{\code{TRUE} or \code{FALSE}; if \code{TRUE}, return
-the value on the log-scale.}
 
 \item{normalize}{\code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
 compute or apply the normalizing constant to each density value.}
@@ -48,6 +45,9 @@ the extreme point \eqn{m \bm{e}_{\ell}} where \eqn{\ell = \textrm{argmax}_{j}\{p
 \item{report_period}{How often to output progress for Gibbs sampler. A value of
 \code{s} means that a progress message will be printed every \code{s} iterations
 of the sampler.}
+
+\item{take_log}{\code{TRUE} or \code{FALSE}; if \code{TRUE}, return
+the value on the log-scale.}
 }
 \value{
 The values returned by each function are:

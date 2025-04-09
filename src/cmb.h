@@ -13,7 +13,7 @@ arma::vec r_cmb(unsigned int n, unsigned int m, double p, double nu);
 //' @export
 // [[Rcpp::export]]
 double d_cmb(unsigned int x, unsigned int m, double p,
-	double nu, bool take_log = false, bool normalize = true);
+	double nu, bool log = false, bool normalize = true);
 
 //' @name cmb
 //' @export
@@ -30,7 +30,7 @@ double q_cmb(unsigned int q, unsigned int m, double p, double nu);
 //' @export
 // [[Rcpp::export]]
 double normconst_cmb(unsigned int m, double p, double nu,
-	bool take_log = false);
+	bool log = false);
 
 //' Density for CMB random sample
 //' 
@@ -46,7 +46,7 @@ double normconst_cmb(unsigned int m, double p, double nu,
 //' \eqn{p_1, \ldots, p_n}
 //' @param nu An \eqn{n}-dimensional vector of dispersion parameters
 //' \eqn{\nu_1, \ldots, \nu_n}
-//' @param take_log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
+//' @param log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return the
 //' value on the log-scale.
 //' 
 //' @return
@@ -76,11 +76,11 @@ double normconst_cmb(unsigned int m, double p, double nu,
 //'     y[i] = r_cmb(1, m[i], p[i], nu[i])
 //' }
 //' 
-//' d_cmb_sample(y, m, p, nu, take_log = TRUE)
+//' d_cmb_sample(y, m, p, nu, log = TRUE)
 //' 
 //' @export
 // [[Rcpp::export]]
 arma::vec d_cmb_sample(const arma::vec& x, const arma::vec& m,
-	const arma::vec& p, const arma::vec& nu, bool take_log = false);
+	const arma::vec& p, const arma::vec& nu, bool log = false);
 
 #endif
