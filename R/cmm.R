@@ -71,8 +71,8 @@ r_cmm = function(n, m, p, nu, burn = 0, thin = 1, x_init = NULL, report = NULL)
 {
 	k = length(p)
 	reps = burn + n*thin
-	if (is.null(report_period)) {
-		report_period = reps + 1
+	if (is.null(report)) {
+		report = reps + 1
 	}
 	if (is.null(x_init)) {
 		x_init = rep(0, k)
