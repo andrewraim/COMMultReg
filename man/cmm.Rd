@@ -26,6 +26,9 @@ v_cmm(m, p, nu)
 
 \item{nu}{Dispersion parameter.}
 
+\item{log}{\code{TRUE} or \code{FALSE}; if \code{TRUE}, return
+the value on the log-scale.}
+
 \item{normalize}{\code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
 compute or apply the normalizing constant to each density value.}
 
@@ -45,9 +48,6 @@ the extreme point \eqn{m \bm{e}_{\ell}} where \eqn{\ell = \textrm{argmax}_{j}\{p
 \item{report_period}{How often to output progress for Gibbs sampler. A value of
 \code{s} means that a progress message will be printed every \code{s} iterations
 of the sampler.}
-
-\item{take_log}{\code{TRUE} or \code{FALSE}; if \code{TRUE}, return
-the value on the log-scale.}
 }
 \value{
 The values returned by each function are:
@@ -90,8 +90,8 @@ p = c(0.1,0.1,0.8)
 nu = 0.8
 
 x = r_cmm(100, m, p, nu, burn = 1000, thin = 10)
-d_cmm(x[1,], p, nu, take_log = TRUE)
-normconst_cmm(m, p, nu, take_log = TRUE)
+d_cmm(x[1,], p, nu, log = TRUE)
+normconst_cmm(m, p, nu, log = TRUE)
 e_cmm(m, p, nu)
 v_cmm(m, p, nu)
 

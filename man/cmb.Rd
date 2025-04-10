@@ -36,11 +36,11 @@ v_cmb(m, p, nu)
 
 \item{x}{A scalar representing the outcome.}
 
+\item{log}{\code{TRUE} or \code{FALSE}; if \code{TRUE}, return
+the value on the log-scale.}
+
 \item{normalize}{\code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
 compute or apply the normalizing constant to each density value.}
-
-\item{take_log}{\code{TRUE} or \code{FALSE}; if \code{TRUE}, return
-the value on the log-scale.}
 }
 \value{
 The values returned by each function are:
@@ -80,8 +80,8 @@ p = 0.7
 nu = 0.8
 
 x = r_cmb(100, m, p, nu)
-d_cmb(x[1], m, p, nu, take_log = TRUE)
-normconst_cmb(m, p, nu, take_log = TRUE)
+d_cmb(x[1], m, p, nu, log = TRUE)
+normconst_cmb(m, p, nu, log = TRUE)
 e_cmb(m, p, nu)
 v_cmb(m, p, nu)
 

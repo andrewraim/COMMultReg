@@ -7,7 +7,7 @@
 #' @param m Number of trials in the CMB cluster.
 #' @param p Probability parameter; a vector of positive numbers which sums to 1.
 #' @param nu Dispersion parameter.
-#' @param take_log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return
+#' @param log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return
 #' the value on the log-scale.
 #' @param normalize \code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
 #' compute or apply the normalizing constant to each density value.
@@ -58,8 +58,8 @@
 #' nu = 0.8
 #' 
 #' x = r_cmm(100, m, p, nu, burn = 1000, thin = 10)
-#' d_cmm(x[1,], p, nu, take_log = TRUE)
-#' normconst_cmm(m, p, nu, take_log = TRUE)
+#' d_cmm(x[1,], p, nu, log = TRUE)
+#' normconst_cmm(m, p, nu, log = TRUE)
 #' e_cmm(m, p, nu)
 #' v_cmm(m, p, nu)
 #' 
@@ -98,7 +98,7 @@ e_cmm = function(m, p, nu)
 	P_mat = matrix(p, nrow(xx), k, byrow = TRUE)
 	nu_mat = rep(nu, nrow(xx))
 
-	f_all_unnorm = d_cmm_sample(xx, P_mat, nu_mat, take_log = FALSE, normalize = FALSE)
+	f_all_unnorm = d_cmm_sample(xx, P_mat, nu_mat, log = FALSE, normalize = FALSE)
 	f_all = normalize(f_all_unnorm)
 	as.numeric(t(xx) %*% f_all)
 }
@@ -118,7 +118,7 @@ v_cmm = function(m, p, nu)
 	P_mat = matrix(p, nrow(xx), k, byrow = TRUE)
 	nu_mat = rep(nu, nrow(xx))
 
-	f_all_unnorm = d_cmm_sample(xx, P_mat, nu_mat, take_log = FALSE, normalize = FALSE)
+	f_all_unnorm = d_cmm_sample(xx, P_mat, nu_mat, log = FALSE, normalize = FALSE)
 	f_all = as.numeric(normalize(f_all_unnorm))
 	e = as.numeric(t(xx) %*% f_all)
 	t(xx) %*% (f_all * xx) - e %*% t(e)

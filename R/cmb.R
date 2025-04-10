@@ -7,7 +7,7 @@
 #' @param m Number of trials in the CMB cluster.
 #' @param p Probability parameter
 #' @param nu Dispersion parameter
-#' @param take_log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return
+#' @param log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return
 #' the value on the log-scale.
 #' @param normalize \code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
 #' compute or apply the normalizing constant to each density value.
@@ -46,8 +46,8 @@
 #' nu = 0.8
 #' 
 #' x = r_cmb(100, m, p, nu)
-#' d_cmb(x[1], m, p, nu, take_log = TRUE)
-#' normconst_cmb(m, p, nu, take_log = TRUE)
+#' d_cmb(x[1], m, p, nu, log = TRUE)
+#' normconst_cmb(m, p, nu, log = TRUE)
 #' e_cmb(m, p, nu)
 #' v_cmb(m, p, nu)
 #' 
@@ -66,7 +66,7 @@ e_cmb = function(m, p, nu)
 	xx = 0:m
 	f_all_unnorm = numeric(m+1)
 	for (i in seq_along(xx)) {
-		f_all_unnorm[i] = d_cmb(xx[i], m, p, nu, take_log = FALSE, normalize = FALSE)
+		f_all_unnorm[i] = d_cmb(xx[i], m, p, nu, log = FALSE, normalize = FALSE)
 	}
 
 	f_all = normalize(f_all_unnorm)
@@ -85,7 +85,7 @@ v_cmb = function(m, p, nu)
 	xx = 0:m
 	f_all_unnorm = numeric(m+1)
 	for (i in seq_along(xx)) {
-		f_all_unnorm[i] = d_cmb(xx[i], m, p, nu, take_log = FALSE, normalize = FALSE)
+		f_all_unnorm[i] = d_cmb(xx[i], m, p, nu, log = FALSE, normalize = FALSE)
 	}
 
 	f_all = normalize(f_all_unnorm)
