@@ -1,7 +1,7 @@
 #include <map>
-#include "cmm-reg.h"
-#include "MultIterator.h"
-#include "util.h"
+#include "rcpp-cmm-reg.h"
+#include "rcpp-util.h"
+#include "COMMultReg.h"
 
 // A comparator which specifies an ordering between two arma::uvec objects
 struct comparator_uvec {
@@ -36,7 +36,7 @@ Rcpp::List gunterize(const arma::umat& X, bool all)
 
 	freq_map_type freq_map;
 	if (all) {
-		MultIterator itr(k, m);
+		COMMultReg::MultIterator itr(k, m);
 		for (; !itr.is_end(); itr.increment()) {
 			const arma::vec& v = itr.getCounts();
 			const arma::uvec& u = arma::conv_to<arma::uvec>::from(v);
@@ -95,7 +95,7 @@ Rcpp::List loglik_score_fim_cmm(const Rcpp::List& par,
 		// This part of the calculation only requires the observed data
 		for (unsigned int i = 0; i < zz.n_rows; i++) {
 			arma::vec s = arma::join_rows(
-				arma::join_rows(ee, logchoose(zz.row(i).t()) * w.t()),
+				arma::join_rows(ee, lchoose(zz.row(i).t()) * w.t()),
 				arma::kron(zz_based.row(i), x.t())
 			).t();
 			double svartheta = dot(s, vartheta) + log(n_l);
@@ -105,14 +105,14 @@ Rcpp::List loglik_score_fim_cmm(const Rcpp::List& par,
 		}
 
 		// This part of the calculation requires the whole mult sample space
-		MultIterator itr(k, m);
+		COMMultReg::MultIterator itr(k, m);
 		for (; !itr.is_end(); itr.increment()) {
 			const arma::rowvec& z = itr.getCounts().t();
 			arma::rowvec z_based = z;
 			z_based.shed_col(baseline-1);
 
 			arma::vec s = arma::join_rows(
-				arma::join_rows(ee, logchoose(z.t()) * w.t()),
+				arma::join_rows(ee, lchoose(z.t()) * w.t()),
 				arma::kron(z_based, x.t())
 			).t();
 			double svartheta = dot(s, vartheta) + log(n_l);

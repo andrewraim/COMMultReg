@@ -1,2 +1,5 @@
-PKG_CXXFLAGS = $(SHLIB_CXXFLAGS)
+PKG_CPPFLAGS=-I../inst/include -I.
 PKG_LIBS = $(SHLIB_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+SOURCES=rcpp-util.cpp rcpp-cmm-reg.cpp rcpp-cmb.cpp rcpp-cmm.cpp
+OBJECTS=RcppExports.o $(SOURCES:.cpp=.o)
+

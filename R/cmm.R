@@ -1,40 +1,39 @@
 #' Conway Maxwell Multinomial distribution
 #' 
-#' Functions for the \eqn{\textrm{CMM}_k(m, \bm{p}, \nu)} distribution.
+#' Functions for the \eqn{\text{CMM}_k(m, \bm{p}, \nu)} distribution.
 #' 
-#' @param x A eqn{k}-dimensional vector representing the outcome.
+#' @param x A \eqn{k}-dimensional vector representing the outcome.
 #' @param n Number of draws to produce.
 #' @param m Number of trials in the CMB cluster.
 #' @param p Probability parameter; a vector of positive numbers which sums to 1.
 #' @param nu Dispersion parameter.
-#' @param log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return
-#' the value on the log-scale.
-#' @param normalize \code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
+#' @param log `TRUE` or `FALSE`; if `TRUE`, return the value on the log-scale.
+#' @param normalize `TRUE` or `FALSE`; if `FALSE`, do not
 #' compute or apply the normalizing constant to each density value.
 #' @param burn Number of initial draws to burn for Gibbs sampler.
-#' @param thin Thinning interval for Gibbs sampler. A value of \code{s} means
-#' that \code{s} iterations of the sampler will be carried out before saving each
-#' of the \code{n} requested draws.
-#' @param report_period How often to output progress for Gibbs sampler. A value of
-#' \code{s} means that a progress message will be printed every \code{s} iterations
+#' @param thin Thinning interval for Gibbs sampler. A value of `s` means
+#' that `s` iterations of the sampler will be carried out before saving each
+#' of the `n` requested draws.
+#' @param report How often to output progress for Gibbs sampler. A value of
+#' `s` means that a progress message will be printed every `s` iterations
 #' of the sampler.
-#' @param x_init Initial value for Gibbs sampler. If \code{NULL}, it is set to
-#' the extreme point \eqn{m \bm{e}_{\ell}} where \eqn{\ell = \textrm{argmax}_{j}\{p_j\}}. 
+#' @param x_init Initial value for Gibbs sampler. If `NULL`, it is set to
+#' the extreme point \eqn{m \bm{e}_{\ell}} where \eqn{\ell = \text{argmax}_{j}\{p_j\}}. 
 #' 
 #' @return The values returned by each function are:
 #' \itemize{
-#' \item \code{d_cmm}: the CMM density \eqn{f(\bm{x} \mid m, \bm{p}, \nu)},
-#' where \eqn{m} is assumed to be \code{sum(x)}.
-#' \item \code{r_cmm}: an \eqn{n \times k} matrix of draws.
-#' \item \code{normconst_cmm}: a number representing the normalizing constant \eqn{C(m, \bm{p}, \nu)}.
-#' \item \code{e_cmm}: a \eqn{k}-dimensional vector representing \eqn{\textrm{E}(\bm{X})}.
-#' \item \code{v_cmm}: a \eqn{k \times k} matrix representing \eqn{\textrm{Var}(\bm{X})}
+#' \item `d_cmm`: the CMM density \eqn{f(\bm{x} \mid m, \bm{p}, \nu)},
+#' where \eqn{m} is assumed to be `sum(x)`.
+#' \item `r_cmm`: an \eqn{n \times k} matrix of draws.
+#' \item `normconst_cmm`: a number representing the normalizing constant \eqn{C(m, \bm{p}, \nu)}.
+#' \item `e_cmm`: a \eqn{k}-dimensional vector representing \eqn{\text{E}(\bm{X})}.
+#' \item `v_cmm`: a \eqn{k \times k} matrix representing \eqn{\text{Var}(\bm{X})}
 #' }
 #'
 #' @details
 #' Let \eqn{\Omega_{m,k}} denote the multinomial sample space based on \eqn{m} trials
 #' and \eqn{k} categories. A random variable
-#' \eqn{\bm{X} \sim \textrm{CMM}_k(m, \bm{p}, \nu)} has probability mass function
+#' \eqn{\bm{X} \sim \text{CMM}_k(m, \bm{p}, \nu)} has probability mass function
 #' \deqn{
 #' f(\bm{x} \mid m, \bm{p}, \nu) = C(m, \bm{p}, \nu)^{-1} {m \choose x_1 \cdots x_k}^\nu
 #' p_1^{x_1} \cdots p_k^{x_k}, \quad \bm{x} \in \Omega_{m,k}
@@ -68,7 +67,7 @@ NULL
 
 #' @name cmm
 #' @export
-r_cmm = function(n, m, p, nu, burn = 0, thin = 1, x_init = NULL, report_period = NULL)
+r_cmm = function(n, m, p, nu, burn = 0, thin = 1, x_init = NULL, report = NULL)
 {
 	k = length(p)
 	reps = burn + n*thin
@@ -80,7 +79,7 @@ r_cmm = function(n, m, p, nu, burn = 0, thin = 1, x_init = NULL, report_period =
 		idx_max = which.max(p)
 		x_init[idx_max] = m
 	}
-	r_cmm_internal(n, m, p, nu, burn, thin, x_init, report_period)
+	r_cmm_internal(n, m, p, nu, burn, thin, x_init, report)
 }
 
 # Expected value of CMM, from the definition of E(X)

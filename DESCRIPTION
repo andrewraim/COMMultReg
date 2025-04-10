@@ -9,8 +9,12 @@ Description: Conway-Maxwell Multinomial (CMM) distribution and regression
     multinomial which supports positive or negative association among trials in
     each observation.
 License: GPL (>= 2)
-Depends: Rcpp, combinat
-LinkingTo: Rcpp, RcppArmadillo
+Imports:
+	Rcpp,
+	combinat
+LinkingTo:
+	Rcpp,
+	RcppArmadillo
 RoxygenNote: 7.3.2
 Encoding: UTF-8
 SystemRequirements: C++11

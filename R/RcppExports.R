@@ -3,35 +3,34 @@
 
 #' @name cmb
 #' @export
-r_cmb <- function(n, m, p, nu) {
-    .Call(`_COMMultReg_r_cmb`, n, m, p, nu)
+d_cmb <- function(x, m, p, nu, log = FALSE, normalize = TRUE) {
+    .Call(`_COMMultReg_d_cmb_rcpp`, x, m, p, nu, log, normalize)
 }
 
 #' @name cmb
 #' @export
-d_cmb <- function(x, m, p, nu, log = FALSE, normalize = TRUE) {
-    .Call(`_COMMultReg_d_cmb`, x, m, p, nu, log, normalize)
+r_cmb <- function(n, m, p, nu) {
+    .Call(`_COMMultReg_r_cmb_rcpp`, n, m, p, nu)
 }
 
 #' @name cmb
 #' @export
 p_cmb <- function(x, m, p, nu) {
-    .Call(`_COMMultReg_p_cmb`, x, m, p, nu)
+    .Call(`_COMMultReg_p_cmb_rcpp`, x, m, p, nu)
 }
 
 #' @name cmb
 #' @export
 q_cmb <- function(q, m, p, nu) {
-    .Call(`_COMMultReg_q_cmb`, q, m, p, nu)
+    .Call(`_COMMultReg_q_cmb_rcpp`, q, m, p, nu)
 }
 
 #' @name cmb
 #' @export
 normconst_cmb <- function(m, p, nu, log = FALSE) {
-    .Call(`_COMMultReg_normconst_cmb`, m, p, nu, log)
+    .Call(`_COMMultReg_normconst_cmb_rcpp`, m, p, nu, log)
 }
 
-#' Density for CMB random sample
 #' 
 #' Compute individual density contributions for
 #' \deqn{
@@ -79,7 +78,7 @@ normconst_cmb <- function(m, p, nu, log = FALSE) {
 #' 
 #' @export
 d_cmb_sample <- function(x, m, p, nu, log = FALSE) {
-    .Call(`_COMMultReg_d_cmb_sample`, x, m, p, nu, log)
+    .Call(`_COMMultReg_d_cmb_sample_rcpp`, x, m, p, nu, log)
 }
 
 gunterize <- function(X, all = FALSE) {
@@ -91,19 +90,19 @@ loglik_score_fim_cmm <- function(par, dat_xform, baseline) {
 }
 
 r_cmm_internal <- function(n, m, p, nu, burn, thin, x_init, report) {
-    .Call(`_COMMultReg_r_cmm_internal`, n, m, p, nu, burn, thin, x_init, report)
+    .Call(`_COMMultReg_r_cmm_internal_rcpp`, n, m, p, nu, burn, thin, x_init, report)
 }
 
 #' @name cmm
 #' @export
 d_cmm <- function(x, p, nu, log = FALSE, normalize = TRUE) {
-    .Call(`_COMMultReg_d_cmm`, x, p, nu, log, normalize)
+    .Call(`_COMMultReg_d_cmm_rcpp`, x, p, nu, log, normalize)
 }
 
 #' @name cmm
 #' @export
 normconst_cmm <- function(m, p, nu, log = FALSE) {
-    .Call(`_COMMultReg_normconst_cmm`, m, p, nu, log)
+    .Call(`_COMMultReg_normconst_cmm_rcpp`, m, p, nu, log)
 }
 
 #' Density for CMM random sample
@@ -169,15 +168,15 @@ normconst_cmm <- function(m, p, nu, log = FALSE) {
 #' 
 #' @export
 d_cmm_sample <- function(X, P, nu, log = FALSE, normalize = TRUE) {
-    .Call(`_COMMultReg_d_cmm_sample`, X, P, nu, log, normalize)
+    .Call(`_COMMultReg_d_cmm_sample_rcpp`, X, P, nu, log, normalize)
 }
 
 pinv <- function(x) {
     .Call(`_COMMultReg_pinv`, x)
 }
 
-logchoose <- function(x) {
-    .Call(`_COMMultReg_logchoose`, x)
+lchoose <- function(x) {
+    .Call(`_COMMultReg_lchoose`, x)
 }
 
 normalize <- function(x, na_rm = TRUE) {

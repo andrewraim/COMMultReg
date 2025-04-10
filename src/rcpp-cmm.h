@@ -1,24 +1,25 @@
 #ifndef CMM_H
 #define CMM_H
 
-// [[Rcpp::depends(RcppArmadillo)]]
-#include <RcppArmadillo.h>
-
-// [[Rcpp::export]]
-arma::mat r_cmm_internal(unsigned int n, unsigned int m, const arma::vec& p,
-	double nu, unsigned int burn, unsigned int thin, const arma::vec& x_init,
-	unsigned int report);
+/*
+* The CMM conditionals are CMB random variables. We can use this fact to
+* sample from CMM using a Gibbs sampler.
+*/
+// [[Rcpp::export("r_cmm_internal")]]
+arma::mat r_cmm_internal_rcpp(unsigned int n, unsigned int m,
+	const arma::vec& p, double nu, unsigned int burn, unsigned int thin,
+	const arma::vec& x_init, unsigned int report);
 
 //' @name cmm
 //' @export
-// [[Rcpp::export]]
-double d_cmm(const arma::vec& x, const arma::vec& p, double nu,
+// [[Rcpp::export("d_cmm")]]
+double d_cmm_rcpp(const arma::vec& x, const arma::vec& p, double nu,
 	bool log = false, bool normalize = true);
 
 //' @name cmm
 //' @export
-// [[Rcpp::export]]
-double normconst_cmm(unsigned int m, const arma::vec& p, double nu,
+// [[Rcpp::export("normconst_cmm")]]
+double normconst_cmm_rcpp(unsigned int m, const arma::vec& p, double nu,
 	bool log = false);
 
 //' Density for CMM random sample
@@ -83,9 +84,8 @@ double normconst_cmm(unsigned int m, const arma::vec& p, double nu,
 //' d_cmm_sample(y, P, nu, log = TRUE)
 //' 
 //' @export
-// [[Rcpp::export]]
-arma::vec d_cmm_sample(const arma::mat& X, const arma::mat& P,
+// [[Rcpp::export("d_cmm_sample")]]
+arma::vec d_cmm_sample_rcpp(const arma::mat& X, const arma::mat& P,
 	const arma::vec& nu, bool log = false, bool normalize = true);
 
 #endif
-

@@ -1,29 +1,29 @@
 #' Conway Maxwell Binomial distribution
 #' 
-#' Functions for \eqn{\textrm{CMB}(m, p, \nu)} distribution.
+#' Functions for \eqn{\text{CMB}(m, p, \nu)} distribution.
 #' 
 #' @param x A scalar representing the outcome.
 #' @param n Number of draws to produce.
 #' @param m Number of trials in the CMB cluster.
 #' @param p Probability parameter
 #' @param nu Dispersion parameter
-#' @param log \code{TRUE} or \code{FALSE}; if \code{TRUE}, return
+#' @param log `TRUE` or `FALSE`; if `TRUE`, return
 #' the value on the log-scale.
-#' @param normalize \code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
+#' @param normalize `TRUE` or `FALSE`; if `FALSE`, do not
 #' compute or apply the normalizing constant to each density value.
 #' 
 #' @return The values returned by each function are:
 #' \itemize{
-#' \item \code{d_cmb}: a number representing the CMB density \eqn{f(x \mid m, p, \nu)}.
-#' \item \code{r_cmb}: an \eqn{n}-dimensional vector of draws.
-#' \item \code{normconst_cmb}: a number representing the normalizing constant \eqn{C(m, p, \nu)}.
-#' \item \code{e_cmb}: a number representing \eqn{\textrm{E}(X)}.
-#' \item \code{v_cmb}: a number representing \eqn{\textrm{Var}(X)}
+#' \item `d_cmb`: a number representing the CMB density \eqn{f(x \mid m, p, \nu)}.
+#' \item `r_cmb`: an \eqn{n}-dimensional vector of draws.
+#' \item `normconst_cmb`: a number representing the normalizing constant \eqn{C(m, p, \nu)}.
+#' \item `e_cmb`: a number representing \eqn{\text{E}(X)}.
+#' \item `v_cmb`: a number representing \eqn{\text{Var}(X)}
 #' }
 #' 
 #' @details
 #' A random variable
-#' \eqn{X \sim \textrm{CMB}(m, p, \nu)} has probability mass function
+#' \eqn{X \sim \text{CMB}(m, p, \nu)} has probability mass function
 #' \deqn{
 #' f(x \mid m, p, \nu) = C(m, p, \nu)^{-1} {m \choose x}^\nu p^{x} (1-p)^{m-x},
 #' \quad x \in \{0, 1, \ldots, m\}

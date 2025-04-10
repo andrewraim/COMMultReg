@@ -1,38 +1,33 @@
 #ifndef CMB_H
 #define CMB_H
 
-// [[Rcpp::depends(RcppArmadillo)]]
-#include <RcppArmadillo.h>
-
 //' @name cmb
 //' @export
-// [[Rcpp::export]]
-arma::vec r_cmb(unsigned int n, unsigned int m, double p, double nu);
-
-//' @name cmb
-//' @export
-// [[Rcpp::export]]
-double d_cmb(unsigned int x, unsigned int m, double p,
+// [[Rcpp::export("d_cmb")]]
+double d_cmb_rcpp(unsigned int x, unsigned int m, double p,
 	double nu, bool log = false, bool normalize = true);
 
 //' @name cmb
 //' @export
-// [[Rcpp::export]]
-double p_cmb(unsigned int x, unsigned int m, double p, double nu);
-
-
-//' @name cmb
-//' @export
-// [[Rcpp::export]]
-double q_cmb(unsigned int q, unsigned int m, double p, double nu);
+// [[Rcpp::export("r_cmb")]]
+arma::vec r_cmb_rcpp(unsigned int n, unsigned int m, double p, double nu);
 
 //' @name cmb
 //' @export
-// [[Rcpp::export]]
-double normconst_cmb(unsigned int m, double p, double nu,
-	bool log = false);
+// [[Rcpp::export("p_cmb")]]
+double p_cmb_rcpp(unsigned int x, unsigned int m, double p, double nu);
 
-//' Density for CMB random sample
+//' @name cmb
+//' @export
+// [[Rcpp::export("q_cmb")]]
+double q_cmb_rcpp(unsigned int q, unsigned int m, double p, double nu);
+
+//' @name cmb
+//' @export
+// [[Rcpp::export("normconst_cmb")]]
+double normconst_cmb_rcpp(unsigned int m, double p, double nu, bool log = false);
+
+	//' Density for CMB random sample
 //' 
 //' Compute individual density contributions for
 //' \deqn{
@@ -79,8 +74,8 @@ double normconst_cmb(unsigned int m, double p, double nu,
 //' d_cmb_sample(y, m, p, nu, log = TRUE)
 //' 
 //' @export
-// [[Rcpp::export]]
-arma::vec d_cmb_sample(const arma::vec& x, const arma::vec& m,
+// [[Rcpp::export("d_cmb_sample")]]
+arma::vec d_cmb_sample_rcpp(const arma::vec& x, const arma::vec& m,
 	const arma::vec& p, const arma::vec& nu, bool log = false);
 
 #endif

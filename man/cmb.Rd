@@ -2,8 +2,8 @@
 % Please edit documentation in R/RcppExports.R, R/cmb.R
 \name{cmb}
 \alias{cmb}
-\alias{r_cmb}
 \alias{d_cmb}
+\alias{r_cmb}
 \alias{p_cmb}
 \alias{q_cmb}
 \alias{normconst_cmb}
@@ -11,9 +11,9 @@
 \alias{v_cmb}
 \title{Conway Maxwell Binomial distribution}
 \usage{
-r_cmb(n, m, p, nu)
-
 d_cmb(x, m, p, nu, log = FALSE, normalize = TRUE)
+
+r_cmb(n, m, p, nu)
 
 p_cmb(x, m, p, nu)
 
@@ -26,7 +26,7 @@ e_cmb(m, p, nu)
 v_cmb(m, p, nu)
 }
 \arguments{
-\item{n}{Number of draws to produce.}
+\item{x}{A scalar representing the outcome.}
 
 \item{m}{Number of trials in the CMB cluster.}
 
@@ -34,30 +34,30 @@ v_cmb(m, p, nu)
 
 \item{nu}{Dispersion parameter}
 
-\item{x}{A scalar representing the outcome.}
-
-\item{log}{\code{TRUE} or \code{FALSE}; if \code{TRUE}, return
+\item{log}{`TRUE` or `FALSE`; if `TRUE`, return
 the value on the log-scale.}
 
-\item{normalize}{\code{TRUE} or \code{FALSE}; if \code{FALSE}, do not
+\item{normalize}{`TRUE` or `FALSE`; if `FALSE`, do not
 compute or apply the normalizing constant to each density value.}
+
+\item{n}{Number of draws to produce.}
 }
 \value{
 The values returned by each function are:
 \itemize{
-\item \code{d_cmb}: a number representing the CMB density \eqn{f(x \mid m, p, \nu)}.
-\item \code{r_cmb}: an \eqn{n}-dimensional vector of draws.
-\item \code{normconst_cmb}: a number representing the normalizing constant \eqn{C(m, p, \nu)}.
-\item \code{e_cmb}: a number representing \eqn{\textrm{E}(X)}.
-\item \code{v_cmb}: a number representing \eqn{\textrm{Var}(X)}
+\item `d_cmb`: a number representing the CMB density \eqn{f(x \mid m, p, \nu)}.
+\item `r_cmb`: an \eqn{n}-dimensional vector of draws.
+\item `normconst_cmb`: a number representing the normalizing constant \eqn{C(m, p, \nu)}.
+\item `e_cmb`: a number representing \eqn{\text{E}(X)}.
+\item `v_cmb`: a number representing \eqn{\text{Var}(X)}
 }
 }
 \description{
-Functions for \eqn{\textrm{CMB}(m, p, \nu)} distribution.
+Functions for \eqn{\text{CMB}(m, p, \nu)} distribution.
 }
 \details{
 A random variable
-\eqn{X \sim \textrm{CMB}(m, p, \nu)} has probability mass function
+\eqn{X \sim \text{CMB}(m, p, \nu)} has probability mass function
 \deqn{
 f(x \mid m, p, \nu) = C(m, p, \nu)^{-1} {m \choose x}^\nu p^{x} (1-p)^{m-x},
 \quad x \in \{0, 1, \ldots, m\}

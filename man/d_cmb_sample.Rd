@@ -2,7 +2,11 @@
 % Please edit documentation in R/RcppExports.R
 \name{d_cmb_sample}
 \alias{d_cmb_sample}
-\title{Density for CMB random sample}
+\title{Compute individual density contributions for
+\deqn{
+X_i \sim \textrm{CMB}(m_i, p_i, \nu_i),
+\quad i = 1, \ldots, n.
+}}
 \usage{
 d_cmb_sample(x, m, p, nu, log = FALSE)
 }

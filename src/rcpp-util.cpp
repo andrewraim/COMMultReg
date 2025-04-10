@@ -1,11 +1,11 @@
-#include "util.h"
+#include "rcpp-util.h"
 
 arma::mat pinv(const arma::mat& x) {
 	return arma::pinv(x);
 }
 
-double logchoose(const arma::vec& x) {
-	return lgamma(sum(x)+1) - sum(lgamma(x+1));
+double lchoose(const arma::vec& x) {
+	return lgamma(arma::sum(x)+1) - arma::sum(arma::lgamma(x+1));
 }
 
 arma::vec normalize(const arma::vec& x, bool na_rm)
